@@ -44,7 +44,6 @@ const creatNode = (data, i)  => {
       .then(data => {
 
        for (let i = 0; i < data.length; i++) {
-         console.log(data[i]);
          // je boucle sur ce resultat
          creatNode(data, i);
        }
