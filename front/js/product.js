@@ -15,7 +15,7 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
     const img = document.createElement('img');
     // j'attache ma balise "img" a la class "item__img"
     document.querySelector('.item__img').appendChild(img);
-    img.src = data.imageUrl// je rajoute la  src = "data.imageUrl"
+    img.src = data.imageUrl // je rajoute la  src = "data.imageUrl"
 
     // je selectionne les parents et je rajoute du texte
     // le texte il sagit du retour Json avec les cle correspondantes
@@ -37,50 +37,56 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
     }
 
     document.querySelector('#addToCart').addEventListener('click', (e) => {
-      // recupere les Values de la page
-      const valueColors = document.querySelector("#colors").value;
-      const valueQuantity = document.querySelector("#quantity").value;
-      // recupere le prix l'img et le nom de l'API
-      const price = data.price;
-      const img = data.imageUrl;
-      const name = data.name;
 
+      const value = {
+        // recupere les Values de la page
+        valueColors: document.querySelector("#colors").value,
+        valueQuantity: document.querySelector("#quantity").value,
+        // recupere le prix l'img et le nom de l'API
+        price: data.price,
+        img: data.imageUrl,
+        name: data.name,
+      }
 
       // je cree mon objet avec les informations necessaire à retenir,
       const product = {
         id: articlId,
-        colors: valueColors,
-        quantity: valueQuantity,
-        prix: price,
-        image: img,
-        name: name,
+        colors: value.valueColors,
+        quantity: value.valueQuantity,
+        prix: value.price,
+        image: value.img,
+        name: value.name,
       }
 
       // je recupere les data de la commande je les transforme en donnee string au localStorage
       localStorage.setItem("commande", JSON.stringify(product));
 
+      //je restaure les donée du localStorage en objet
+      const sessionRestaure = JSON.parse(localStorage.getItem('commande'));
 
-      // for (let i = 0; i < arrayCaisse.length; i++) {
-      //   if (sessionRestaure[i] != arrayCaisse[i]) {
-      //     arrayCaisse.push(product.id)
-      //     console.log(arrayCaisse);
-      //   } else {
+      console.log(sessionRestaure);
+      // je cree un Array avec les donnee du localStorage
+      const arrayCaisse = [sessionRestaure.id, sessionRestaure.colors, sessionRestaure.quantity];
+      console.log(arrayCaisse);
 
-      //   }
-      // }
+
+      for (let i = 0; i < arrayCaisse.length; i++) {
+        if (product.id != arrayCaisse[i]) {
+          localStorage.setItem("commande", JSON.stringify(product));
+        } else if (product.id == arrayCaisse[0] && product.colors != arrayCaisse[1]) {
+          arrayCaisse.push([sessionRestaure.id, sessionRestaure.colors, sessionRestaure.quantity]);
+        } else if (product.id == arrayCaisse[0] && product.colors == arrayCaisse[1]) {
+          arrayCaisse[sessionRestaure.quantity + sessionRestaure.quantity];
+        }
+
+      }
+
+
 
       // rechargement de la page
-      location.reload()
-
+      location.reload();
     })
 
-    // je restaure les donée du localStorage en objet
-    const sessionRestaure = JSON.parse(localStorage.getItem('commande'))
-
-    console.log(sessionRestaure);
-    // je cree un Array avec les donnee du localStorage
-    const arrayCaisse = [sessionRestaure.id, sessionRestaure.colors, sessionRestaure.quantity];
-    console.log(arrayCaisse);
 
     // Lorsqu’on ajoute un produit au panier, si celui-ci n'était pas déjà
     // présent dans le panier, on ajoute un nouvel élément dans l’array.

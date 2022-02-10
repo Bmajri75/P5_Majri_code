@@ -10,7 +10,7 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
     //     EN amont cree un array dans product avec ce qu'il retourne du localstorage 
     // il faut recupere les doneee du localStorage
     // remplacer le prix et les id les couleurs par ce qu'il y'a dans le panier
-    let sessionRestaure = JSON.parse(localStorage.getItem('commande'))
+    const sessionRestaure = JSON.parse(localStorage.getItem('commande'))
     console.log(sessionRestaure);
 
 
