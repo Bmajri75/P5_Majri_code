@@ -2,6 +2,13 @@
 
 // je cree une fonction avec 2 parametre qui cree les noeux dans le HTML et qui reprendra les donnée de l'api pour injecter les datas
 const creatNode = (data, i)  => {
+  
+  // <a></a> => baliseA
+  // <article></article> => baliseArticle
+  //<img/> => img
+  //<h3></h3> => baliseH3
+  //<p></p> => baliseP
+
 
   // ici j'attache le a je lui rajoute le href ainsie que le lien.
   let baliseA = document.createElement('a');
@@ -44,8 +51,8 @@ const creatNode = (data, i)  => {
       .then(data => {
 
        for (let i = 0; i < data.length; i++) {
-         // je boucle sur ce resultat
-         creatNode(data, i);
+         // je boucle sur ce resultat en appel de ma fonction creat node
+         creatNode(data,i);
        }
       })
       .catch(err => {
