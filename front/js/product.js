@@ -36,47 +36,46 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
       option.text = colorFromsApi[i]; // et un texte qui reprendre l'array cree plus haut
     }
 
+
+    
     document.querySelector('#addToCart').addEventListener('click', (e) => {
-
-
       // recupere les Values de la page
       const valueColors = document.querySelector("#colors").value;
       const valueQuantity = document.querySelector("#quantity").value;
       // recupere le prix l'img et le nom de l'API
 
-      // j'ai un objet avec la commande du Clients
-      const commandeCli = {
-        id: articlId,
-        color: valueColors,
-        quantiter: valueQuantity,
-      }
-      // je recupere la commande via l'objet je la transforme en donnee string au localStorage
-      localStorage.setItem("commande", JSON.stringify(commandeCli));
-
-
-
+      // j'ai un arra avec la commande du Clients
+      // un 2eme array vide qui contiendera la commande apres etre envoyer au local storage
+      const commandeCli = [articlId, valueColors, valueQuantity,]
+      const arrayCaisse = []
+      
+      for (let i = 0; i < arrayCaisse.length; i++) {
+        
+         if (arrayCaisse == null || commandeCli[0] != arrayCaisse[0]) {
+           localStorage.setItem(`commande${i}`, JSON.stringify(commandeCli));
+         } else if (commandeCli[0] == arrayCaisse[0] && commandeCli[1] != arrayCaisse[1]) {
+           commandeCli.push([commandeCli[0], commandeCli[1], commandeCli[2]]);
+           localStorage.setItem(`commande${i}`, JSON.stringify(commandeCli));
+         } else if (commandeCli[0] == arrayCaisse[0] && commandeCli[1] == arrayCaisse[1]) {
+           commandeCli += commandeCli[2];
+           localStorage.setItem(`commande${i}`, JSON.stringify(commandeCli));
+         }
+       }
+      
       //je restaure les donée du localStorage en objet
-      const sessionRestaure = JSON.parse(localStorage.getItem('commande'));
-      console.log(sessionRestaure);
-      // je cree un Array avec les donnee du localStorage
-      const arrayCaisse = [sessionRestaure.id, sessionRestaure.color, sessionRestaure.quantiter]
+      const arrayCaisse = JSON.parse(localStorage.getItem('commande'));
       console.log(arrayCaisse);
-
-
-      // for (let i = 0; i < arrayCaisse.length; i++) {
-      //   if (commandeCli.id != arrayCaisse[i]) {
-      //     localStorage.setItem("commande", JSON.stringify(commandeCli));
-      //   } else if (commandeCli.id == arrayCaisse[0] && commandeCli.colors != arrayCaisse[1]) {
-      //     arrayCaisse.push([sessionRestaure.id, sessionRestaure.colors, sessionRestaure.quantity]);
-      //   } else if (commandeCli.id == arrayCaisse[0] && commandeCli.colors == arrayCaisse[1]) {
-      //     arrayCaisse[sessionRestaure.quantity + sessionRestaure.quantity];
-      //   }
-
-      // }
+      // je cree un Array avec les donnee du localStorage
+      
+    
+     
 
 
 
-      // rechargement de la page
+      // Message de validation
+      const confirmationMsg = () => {
+        alert('Votre produit est dans le panier');
+      }
     })
 
 
@@ -86,13 +85,47 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
     // dans le panier (même id + même couleur), on incrémente
     // simplement la quantité du produit correspondant dans l’array.
   })
+
+
   .catch(err => {
     console.log(`vous avez une Erreur !! ${err}`);
   })
 
-const confirmationMsg = () => {
-  alert('Votre produit est dans le panier');
-}
 
+
+
+
+  // =======================
+
+
+
+  // 1 -- Je recupere les valeurs que le clients choisie sous forme [array]
+  // 1 BIS -- Avant de les placer dans le local storage, je verifie si toutes les condition sont reunie 
+
+// condition 1 
+// {  si c'est vide je rajoute }
+// { si l'ID n'existe pas je rajoute}
+
+// condition 2
+// { si l'ID existe mais la couleur non Je rajoute}
+
+// condition 3 
+// {si id existe et la couleur aussi j'augmente la quantiter }
+
+
+// Solution  -- je cree 2 array  
+//       une qui est la commande en cours 
+//       une qui est la commande en sortie du local storage 
+// je les compare 
+
+
+
+  // 2 -- je passe ces valeurs dans le local storage sous forme de chaine de caractere 
+  // 2 BIS ou j'incremente la quantiter si il sagit du meme objet.
+  
+  // 3 -- je recupere ces valeurs sous forme d'objet 
+
+
+  // CEPENDENT  
 
 
