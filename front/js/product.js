@@ -1,7 +1,7 @@
 // je cree une variable danas la quel je recupere un resultat de l'instance URL
 // (l'interface  URL est un objet qui fournit des methode Statique pour cree des URL )
 const articlId = new URL(location.href).searchParams.get('id');
-
+console.log(articlId)
 // je demande le retour de l'api avec fetch
 //celle ci me renvoie une promise j'appel then pour recuperer le resultat et verifier si celui ci est bien passé
 fetch(`http://localhost:3000/api/products/${articlId}`)
@@ -38,53 +38,45 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
 
     document.querySelector('#addToCart').addEventListener('click', (e) => {
 
-      const value = {
-        // recupere les Values de la page
-        valueColors: document.querySelector("#colors").value,
-        valueQuantity: document.querySelector("#quantity").value,
-        // recupere le prix l'img et le nom de l'API
-        price: data.price,
-        img: data.imageUrl,
-        name: data.name,
-      }
 
-      // je cree mon objet avec les informations necessaire à retenir,
-      const product = {
+      // recupere les Values de la page
+      const valueColors = document.querySelector("#colors").value;
+      const valueQuantity = document.querySelector("#quantity").value;
+      // recupere le prix l'img et le nom de l'API
+
+      // j'ai un objet avec la commande du Clients
+      const commandeCli = {
         id: articlId,
-        colors: value.valueColors,
-        quantity: value.valueQuantity,
-        prix: value.price,
-        image: value.img,
-        name: value.name,
+        color: valueColors,
+        quantiter: valueQuantity,
       }
+      // je recupere la commande via l'objet je la transforme en donnee string au localStorage
+      localStorage.setItem("commande", JSON.stringify(commandeCli));
 
-      // je recupere les data de la commande je les transforme en donnee string au localStorage
-      localStorage.setItem("commande", JSON.stringify(product));
+
 
       //je restaure les donée du localStorage en objet
       const sessionRestaure = JSON.parse(localStorage.getItem('commande'));
-
       console.log(sessionRestaure);
       // je cree un Array avec les donnee du localStorage
-      const arrayCaisse = [sessionRestaure.id, sessionRestaure.colors, sessionRestaure.quantity];
+      const arrayCaisse = [sessionRestaure.id, sessionRestaure.color, sessionRestaure.quantiter]
       console.log(arrayCaisse);
 
 
-      for (let i = 0; i < arrayCaisse.length; i++) {
-        if (product.id != arrayCaisse[i]) {
-          localStorage.setItem("commande", JSON.stringify(product));
-        } else if (product.id == arrayCaisse[0] && product.colors != arrayCaisse[1]) {
-          arrayCaisse.push([sessionRestaure.id, sessionRestaure.colors, sessionRestaure.quantity]);
-        } else if (product.id == arrayCaisse[0] && product.colors == arrayCaisse[1]) {
-          arrayCaisse[sessionRestaure.quantity + sessionRestaure.quantity];
-        }
+      // for (let i = 0; i < arrayCaisse.length; i++) {
+      //   if (commandeCli.id != arrayCaisse[i]) {
+      //     localStorage.setItem("commande", JSON.stringify(commandeCli));
+      //   } else if (commandeCli.id == arrayCaisse[0] && commandeCli.colors != arrayCaisse[1]) {
+      //     arrayCaisse.push([sessionRestaure.id, sessionRestaure.colors, sessionRestaure.quantity]);
+      //   } else if (commandeCli.id == arrayCaisse[0] && commandeCli.colors == arrayCaisse[1]) {
+      //     arrayCaisse[sessionRestaure.quantity + sessionRestaure.quantity];
+      //   }
 
-      }
+      // }
 
 
 
       // rechargement de la page
-      location.reload();
     })
 
 
