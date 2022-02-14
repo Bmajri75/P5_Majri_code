@@ -1,15 +1,13 @@
-const articlId = new URL(location.href).searchParams.get('id');
-console.log(articlId)
 
-fetch(`http://localhost:3000/api/products/${articlId}`)
+
+fetch(`http://localhost:3000/api/products/`)
   .then(res => {
     if (res.ok) {
       return res.json() // si tout est ok j'ai un retour dans res que je convertie en format json ()
     }
   })// ce dernier me renvoie encore une promise j'utilise encore then pour les recuperer
   .then(data => {
-    const sessionRestaure = JSON.parse(localStorage.getItem("commande"));
-    console.log(sessionRestaure);
+    localStorageReturn = JSON.parse(localStorage.getItem('commande'))
     //     EN amont cree un array dans product avec ce qu'il retourne du localstorage 
     console.log(data);
     // il faut recupere les doneee du localStorage

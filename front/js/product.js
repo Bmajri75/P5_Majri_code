@@ -55,41 +55,54 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
           color: valueColors,
           quantity: Number(valueQuantity),
         }
+
       // si je localstorage est plein je rentre dans le IF
-        if (localStorageReturn == null)  { 
-        console.log('else if')
-        localStorageReturn =[];
-        localStorageReturn.push(productCommande);
-        localStorage.setItem("commande", JSON.stringify(localStorageReturn));
-        alert(` Votre produit ${data.name} de couleur ${productCommande.color} est dans votre Panier`);
-       
-      }else if (localStorageReturn != null){
-        for (let i = 0; i < localStorageReturn.length; i++) {
-          console.log('test'); 
-          if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i].color == productCommande.color ) {
-         return(
-            localStorageReturn[i].quantity += productCommande.quantity,
-             localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
-             localStorageReturn = JSON.parse(localStorage.getItem('commande'))
-         )
-            }   
-        }
-            // console.log('if')
-            //  localStorageReturn.push(productCommande);
-            //   localStorage.setItem("commande", JSON.stringify(localStorageReturn));
-            //   alert(` Votre produit ${data.name} de couleur ${productCommande.color} est dans votre Panier`)
-              // si mon panier est bien vide je vient directement dans le else
-        }
+        if (localStorageReturn == null){
+          console.log('dans le if');
+          localStorageReturn =[];
+          localStorageReturn.push(productCommande);
+          localStorage.setItem("commande", JSON.stringify(localStorageReturn));
+          console.log(localStorageReturn);
+        }else if (localStorageReturn != null ){
+          console.log('dans le else if');
+          for (let i = 0; i < localStorageReturn.length; i++) {
+            console.log('dans le premier for');
+            if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i].color == productCommande.color ) {
+           return(
+            console.log('dans le 1er return '),
+              localStorageReturn[i].quantity += productCommande.quantity,
+               localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
+               localStorageReturn = JSON.parse(localStorage.getItem('commande'))
+               );
+            }
+          } for (let i = 0; i < localStorageReturn.length; i++) {
+            console.log('dans le 2eme for ')
+            if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i] != productCommande.color || localStorageReturn[i].id != productCommande.id ) {
+              return(
+                console.log('le 2eme returne'),
+                localStorageReturn.push(productCommande),
+                localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
+                localStorageReturn = JSON.parse(localStorage.getItem('commande'))
+              )
+             }            
+          }
+         
       }
+    }
+
+    
     })
 
+    
 
 
-    // Lorsqu’on ajoute un produit au panier, si celui-ci n'était pas déjà
-    // présent dans le panier, on ajoute un nouvel élément dans l’array.
-    // ● Lorsqu’on ajoute un produit au panier, si celui-ci était déjà présent
-    // dans le panier (même id + même couleur), on incrémente
-    // simplement la quantité du produit correspondant dans l’array.
+    // si le localStorage est pas vide je le remplis par la commande dans un nouveau objet
+
+    //si je locAL storage n'ai pas vide mais q'il contien qu minimum un objet 
+    // je verifie mon controle 
+
+
+    // sinon je remplis le local storage par le premier objet
   })
 
 
