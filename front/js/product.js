@@ -1,6 +1,6 @@
 // je cree une variable danas la quel je recupere un resultat de l'instance URL
 // (l'interface  URL est un objet qui fournit des methode Statique pour cree des URL )
-const articlId = new URL(location.href).searchParams.get('id');
+let articlId = new URL(location.href).searchParams.get('id');
 console.log(articlId)
 // je demande le retour de l'api avec fetch
 //celle ci me renvoie une promise j'appel then pour recuperer le resultat et verifier si celui ci est bien passé
