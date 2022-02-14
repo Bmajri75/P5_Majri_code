@@ -39,44 +39,50 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
 
     
     document.querySelector('#addToCart').addEventListener('click', (e) => {
-      // recupere les Values de la page
+      e.preventDefault();
+      // recupere les Values de la page Couleur et Quantiter
       const valueColors = document.querySelector("#colors").value;
       const valueQuantity = document.querySelector("#quantity").value;
-      // recupere le prix l'img et le nom de l'API
 
-      // j'ai un arra avec la commande du Clients
-      // un 2eme array vide qui contiendera la commande apres etre envoyer au local storage
-      const commandeCli = [articlId, valueColors, valueQuantity,]
-      const arrayCaisse = []
-      
-      for (let i = 0; i < arrayCaisse.length; i++) {
-        
-         if (arrayCaisse == null || commandeCli[0] != arrayCaisse[0]) {
-           localStorage.setItem(`commande${i}`, JSON.stringify(commandeCli));
-         } else if (commandeCli[0] == arrayCaisse[0] && commandeCli[1] != arrayCaisse[1]) {
-           commandeCli.push([commandeCli[0], commandeCli[1], commandeCli[2]]);
-           localStorage.setItem(`commande${i}`, JSON.stringify(commandeCli));
-         } else if (commandeCli[0] == arrayCaisse[0] && commandeCli[1] == arrayCaisse[1]) {
-           commandeCli += commandeCli[2];
-           localStorage.setItem(`commande${i}`, JSON.stringify(commandeCli));
-         }
-       }
-      
-      //je restaure les donée du localStorage en objet
-      const arrayCaisse = JSON.parse(localStorage.getItem('commande'));
-      console.log(arrayCaisse);
-      // je cree un Array avec les donnee du localStorage
-      
-    
+      // je fait une initialisation du localStorage 
+      let localStorageReturn = JSON.parse(localStorage.getItem("commande"));
      
-
-
-
-      // Message de validation
-      const confirmationMsg = () => {
-        alert('Votre produit est dans le panier');
+      // je cree une premiere condition pour verifier qu'il y'a bien une valeur a la quantiter
+      if (valueQuantity > 0 && valueQuantity != 0 && valueQuantity <= 100) {
+        // je cree mon objet
+        const productCommande ={
+          id: articlId,
+          color: valueColors,
+          quantity: Number(valueQuantity),
+        }
+      // si je localstorage est plein je rentre dans le IF
+        if (localStorageReturn == null)  { 
+        console.log('else if')
+        localStorageReturn =[];
+        localStorageReturn.push(productCommande);
+        localStorage.setItem("commande", JSON.stringify(localStorageReturn));
+        alert(` Votre produit ${data.name} de couleur ${productCommande.color} est dans votre Panier`);
+       
+      }else if (localStorageReturn != null){
+        for (let i = 0; i < localStorageReturn.length; i++) {
+          console.log('test'); 
+          if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i].color == productCommande.color ) {
+         return(
+            localStorageReturn[i].quantity += productCommande.quantity,
+             localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
+             localStorageReturn = JSON.parse(localStorage.getItem('commande'))
+         )
+            }   
+        }
+            // console.log('if')
+            //  localStorageReturn.push(productCommande);
+            //   localStorage.setItem("commande", JSON.stringify(localStorageReturn));
+            //   alert(` Votre produit ${data.name} de couleur ${productCommande.color} est dans votre Panier`)
+              // si mon panier est bien vide je vient directement dans le else
+        }
       }
     })
+
 
 
     // Lorsqu’on ajoute un produit au panier, si celui-ci n'était pas déjà
