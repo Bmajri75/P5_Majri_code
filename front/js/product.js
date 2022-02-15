@@ -52,9 +52,14 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
         // je cree mon objet
         const productCommande ={
           id: articlId,
+          name: data.name,
+          image: data.imageUrl,
           color: valueColors,
           quantity: Number(valueQuantity),
+          description: data.description,
         }
+
+        console.log(productCommande);
 
       // si je localstorage est plein je rentre dans le IF
         if (localStorageReturn == null){
