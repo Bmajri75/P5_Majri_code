@@ -50,14 +50,17 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
       // je cree une premiere condition pour verifier qu'il y'a bien une valeur a la quantiter
       if (valueQuantity > 0 && valueQuantity != 0 && valueQuantity <= 100) {
         // je cree mon objet
-        const productCommande ={
+       const productCommande ={
           id: articlId,
           name: data.name,
           image: data.imageUrl,
           color: valueColors,
           quantity: Number(valueQuantity),
           description: data.description,
+          prix: data.price
         }
+
+     
 
         console.log(productCommande);
 
