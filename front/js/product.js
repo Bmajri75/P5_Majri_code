@@ -1,7 +1,6 @@
-// je cree une variable danas la quel je recupere un resultat de l'instance URL
+// je cree une variable dans la quel je recupere un resultat de l'instance URL
 // (l'interface  URL est un objet qui fournit des methode Statique pour cree des URL )
 let articlId = new URL(location.href).searchParams.get('id');
-console.log(articlId)
 // je demande le retour de l'api avec fetch
 //celle ci me renvoie une promise j'appel then pour recuperer le resultat et verifier si celui ci est bien passé
 fetch(`http://localhost:3000/api/products/${articlId}`)
@@ -16,17 +15,14 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
     // j'attache ma balise "img" a la class "item__img"
     document.querySelector('.item__img').appendChild(img);
     img.src = data.imageUrl // je rajoute la  src = "data.imageUrl"
-
     // je selectionne les parents et je rajoute du texte
     // le texte il sagit du retour Json avec les cle correspondantes
     document.querySelector('#title').textContent = (`${data.name}`);
     document.querySelector('#price').textContent = (`${data.price}`);
     document.querySelector('#description').textContent = (`${data.description}`);
-
     // gestion des couleurs
     //je cree une variable qui sera un array avec [color1, color 2, color 3]
     let colorFromsApi = data.colors
-
     // je boucle sur la taille de chaque array avec comme incrementation
     // - option qui sera l'enfants de l'ID colors
     for (let i = 0; i < colorFromsApi.length; i++) {
@@ -35,9 +31,6 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
       option.value = colorFromsApi[i]; // une value
       option.text = colorFromsApi[i]; // et un texte qui reprendre l'array cree plus haut
     }
-
-
-    
     document.querySelector('#addToCart').addEventListener('click', (e) => {
       e.preventDefault();
       // recupere les Values de la page Couleur et Quantiter
@@ -46,7 +39,6 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
 
       // je fait une initialisation du localStorage 
       let localStorageReturn = JSON.parse(localStorage.getItem("commande"));
-     
       // je cree une premiere condition pour verifier qu'il y'a bien une valeur a la quantiter
       if (valueQuantity > 0 && valueQuantity != 0 && valueQuantity <= 100) {
         // je cree mon objet
@@ -57,37 +49,28 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
           color: valueColors,
           quantity: Number(valueQuantity),
           description: data.description,
-          prix: data.price
-        }
-
-     
-
-        console.log(productCommande);
+        }  
 
       // si je localstorage est plein je rentre dans le IF
         if (localStorageReturn == null){
-          console.log('dans le if');
+        
           localStorageReturn =[];
           localStorageReturn.push(productCommande);
           localStorage.setItem("commande", JSON.stringify(localStorageReturn));
-          console.log(localStorageReturn);
+      
         }else if (localStorageReturn != null ){
-          console.log('dans le else if');
+         
           for (let i = 0; i < localStorageReturn.length; i++) {
-            console.log('dans le premier for');
             if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i].color == productCommande.color ) {
            return(
-            console.log('dans le 1er return '),
               localStorageReturn[i].quantity += productCommande.quantity,
                localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
                localStorageReturn = JSON.parse(localStorage.getItem('commande'))
                );
             }
-          } for (let i = 0; i < localStorageReturn.length; i++) {
-            console.log('dans le 2eme for ')
+          } for (let i = 0; i < localStorageReturn.length; i++) {      
             if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i] != productCommande.color || localStorageReturn[i].id != productCommande.id ) {
               return(
-                console.log('le 2eme returne'),
                 localStorageReturn.push(productCommande),
                 localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
                 localStorageReturn = JSON.parse(localStorage.getItem('commande'))
@@ -97,23 +80,8 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
          
       }
     }
-
-    
     })
-
-    
-
-
-    // si le localStorage est pas vide je le remplis par la commande dans un nouveau objet
-
-    //si je locAL storage n'ai pas vide mais q'il contien qu minimum un objet 
-    // je verifie mon controle 
-
-
-    // sinon je remplis le local storage par le premier objet
   })
-
-
   .catch(err => {
     console.log(`vous avez une Erreur !! ${err}`);
   })
