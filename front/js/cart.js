@@ -1,35 +1,44 @@
 // je recupere les donnes du LocalStorage
-let localStorageReturn = JSON.parse(localStorage.getItem("commande"));
-const fetchCall = () => {
+const localStorageReturn = JSON.parse(localStorage.getItem("commande"));
 
-  fetch('http://localhost:3000/api/products')
-    .then(res => {
-      if (res.ok) {
-        return res.json() // si tout est ok j'ai un retour dans res que je convertie en format json ()
-      }
-    })
-    .then(data => {
-    })
-    .catch(err => {
-      console.log(`vous avez une Erreur !! ${err}`);
-    })
-}
-fetchCall()
-const getCommandToArray = () => {
+// total Quantity 
+const totalQuantity = () => {
   // variable Initialisees 
-  const commandeArray = [];
+  const quantityTotalArray = [];
   // je boucle sur le tableau du localStorage
   // je recupere les donnée dans commandeArray
-  for (const commande of localStorageReturn) {
-    commandeArray.push(commande);
-    console.log(commandeArray);
+  for (let i = 0; i < localStorageReturn.length; i++) {
+
+    quantityTotalArray.push(localStorageReturn[i].quantity);
+
   }
+
+  const totalValue = quantityTotalArray.reduce(
+    (pre, cur) => pre + cur,
+  );
+  return totalValue
 }
-getCommandToArray();
 
-//cree la page dynamique
+const totalPrice = (data, i) => {
+  // variable Initialisees 
+  const prixTotalArray = [];
+  // for (let i = 0; i < localStorageReturn.length; i++) {
 
-const nodeCart = (i) => {
+  prixTotalArray.push(data.price * localStorageReturn[i].quantity);
+  console.log(prixTotalArray)
+  // }
+  const totalsolde = prixTotalArray.reduce(
+    (pre, cur) => pre + cur,
+  );
+  return totalsolde
+}
+//}
+
+
+//cree la page dynamiquement
+
+
+const nodeCart = (data, i) => {
   const cartItemsId = document.querySelector('#cart__items'); // je prend cart__items je le place dans la variable
   // ==========
   // je cree mes element et Attributs 
@@ -92,7 +101,7 @@ const nodeCart = (i) => {
   const paragraphePrice = document.createElement('p');
   h2Name.innerHTML = `${localStorageReturn[i].name}`;
   paragrapheColor.innerText = ` ${localStorageReturn[i].color}`;
-  paragraphePrice.innerText = `${data[i].prix}`;
+  paragraphePrice.innerText = `${data.price * localStorageReturn[i].quantity} €`;
 
   // ============
 
@@ -113,7 +122,7 @@ const nodeCart = (i) => {
   // ================
   // <p>Qté : </p>
   const paragraphQuantity = document.createElement('p'); // 
-  paragraphQuantity.innerText = `Qté :€`
+  paragraphQuantity.innerText = `Qté:`
 
   // ===============
 
@@ -158,28 +167,57 @@ const nodeCart = (i) => {
   divCartItemContentSeting.appendChild(divCartItemContentSetingDelet);
   divCartItemContentSetingDelet.appendChild(paragrapheDeletItem);
 
-
   // ========
 
+  // TOTAL 
+
+  document.querySelector('#totalQuantity').innerHTML = `${totalQuantity()}`;
+  document.querySelector('#totalPrice').innerHTML = `${totalPrice(data, i)}`;
 
 }
 
 
-for (let i = 0; i < localStorageReturn.length; i++) {
-  nodeCart(i);
+const getFetchApi = () => {
+  for (let i = 0; i < localStorageReturn.length; i++) {
 
-  const inputDelet = document.querySelector('.deleteItem')
-  console.log(inputDelet);
+    fetch(`http://localhost:3000/api/products/${localStorageReturn[i].id}`)
+      .then(res => {
+        if (res.ok) {
+          return res.json() // si tout est ok j'ai un retour dans res que je convertie en format json ()
+        }
+      })
+      .then(data => {
+        nodeCart(data, i)
+        totalQuantity();
+        totalPrice(data, i);
 
-  inputDelet.addEventListener('click', (e) => {
-    e.preventDefault();
-    // je recupere id du click
-
-    // je supprime la commande avec la cle objet
-
-    // let idSelect = localStorage.setItem('commande', 'object');
-    // console.log(idSelect)
-  })
+      })
+      .catch(err => {
+        console.log(`vous avez une Erreur !! ${err}`);
+      })
+  }
 }
+
+getFetchApi()
+
+
+
+
+
+//  bouton supprimer
+// for (let i = 0; i < localStorageReturn.length; i++) {
+
+//   const inputDelet = document.querySelector('.deleteItem')
+//   console.log(inputDelet);
+//   inputDelet.addEventListener('click', (e) => {
+//     e.preventDefault();
+//     // je recupere id du click
+
+//     // je supprime la commande avec la cle objet
+
+//     // let idSelect = localStorage.setItem('commande', 'object');
+//     // console.log(idSelect)
+//   })
+// }
 
 
