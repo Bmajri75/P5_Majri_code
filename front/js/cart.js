@@ -1,18 +1,35 @@
 // je recupere les donnes du LocalStorage
 let localStorageReturn = JSON.parse(localStorage.getItem("commande"));
+const fetchCall = () => {
 
-// variable Initialisees 
-const commandeArray = [];
-// je boucle sur le tableau du localStorage
-// je recupere les donnée dans commandeArray
-for (const commande of localStorageReturn) {
-  commandeArray.push(commande);
-  console.log(commandeArray);
+  fetch('http://localhost:3000/api/products')
+    .then(res => {
+      if (res.ok) {
+        return res.json() // si tout est ok j'ai un retour dans res que je convertie en format json ()
+      }
+    })
+    .then(data => {
+    })
+    .catch(err => {
+      console.log(`vous avez une Erreur !! ${err}`);
+    })
 }
+fetchCall()
+const getCommandToArray = () => {
+  // variable Initialisees 
+  const commandeArray = [];
+  // je boucle sur le tableau du localStorage
+  // je recupere les donnée dans commandeArray
+  for (const commande of localStorageReturn) {
+    commandeArray.push(commande);
+    console.log(commandeArray);
+  }
+}
+getCommandToArray();
 
-//cree la page grace au Dom
+//cree la page dynamique
 
-const nodeCart = () => {
+const nodeCart = (i) => {
   const cartItemsId = document.querySelector('#cart__items'); // je prend cart__items je le place dans la variable
   // ==========
   // je cree mes element et Attributs 
@@ -23,106 +40,105 @@ const nodeCart = () => {
 
   // je donne les valeurs de ms attributs
   classCartItem.value = "cart__item";
-  dataId.value = `${localStorageReturn[0].id}`;
-  dataColor.value = `${localStorageReturn[0].color}`;
+  dataId.value = `${localStorageReturn[i].id}`;
+  dataColor.value = `${localStorageReturn[i].color}`;
 
   // je place mes attribut a mes elements
   articleElem.setAttributeNode(classCartItem);
   articleElem.setAttributeNode(dataId);
   articleElem.setAttributeNode(dataColor);
-  console.log(articleElem);
 
   // ===================
-  // cree mes element 
-  const divCartItemImg = document.createElement('div'); //<div></div>
-  const classCartItemImg = document.createAttribute('class'); //class="cart__item__img">
-
-  // je place mes valeurs 
+  // cree mes element //<div class="cart__item__img">
+  const divCartItemImg = document.createElement('div');
+  const classCartItemImg = document.createAttribute('class');
   classCartItemImg.value = `cart__item__img`;
-
-  // place mes attributs 
   divCartItemImg.setAttributeNode(classCartItemImg);
+  //================================
 
   // =======
-
-  const img = document.createElement('img');  //<img></img>
-  const src = document.createAttribute('src');  //src="../images/product01.jpg"
-  const alt = document.createAttribute('alt'); // alt="">
-
-  src.value = `${localStorageReturn[0].image}`;
-  alt.value = `${localStorageReturn[0].description}`;
-
+  //<img src="../images/producti1.jpg" alt="">
+  const img = document.createElement('img');
+  const src = document.createAttribute('src');
+  const alt = document.createAttribute('alt');
+  src.value = `${localStorageReturn[i].image}`;
+  alt.value = `${localStorageReturn[i].description}`;
   img.setAttributeNode(src);
   img.setAttributeNode(alt);
 
-  console.log(img)
+  //=====================
 
-  const divCartItemContent = document.createElement('div'); // <div></div>
-  const classCartItemContent = document.createAttribute('class'); //class="cart__item__content">
+  // <div> class="cart__item__content">
+  const divCartItemContent = document.createElement('div');
+  const classCartItemContent = document.createAttribute('class');
   classCartItemContent.value = `cart__item__content`;
   divCartItemContent.setAttributeNode(classCartItemContent);
+
   // =================
 
-  const divCartItemContentDesc = document.createElement('div'); //<div></div>
-  const classCartItemContentDesc = document.createAttribute('class'); //class="cart__item__content__description">
-
+  // <div class="cart__item__content__description">
+  const divCartItemContentDesc = document.createElement('div');
+  const classCartItemContentDesc = document.createAttribute('class');
   classCartItemContentDesc.value = `cart__item__content__description`;
-
   divCartItemContentDesc.setAttributeNode(classCartItemContentDesc);
-  // ==========
-  const h2Name = document.createElement('h2');  //<h2>Nom du produit</h2>
-  const paragrapheColor = document.createElement('p'); // <p>Vert</p>
-  const paragraphePrice = document.createElement('p'); // <p>42,00 €</p>
-
-  h2Name.innerHTML = `${localStorageReturn[0].name}`;
-  paragrapheColor.innerText = ` ${localStorageReturn[0].color}`;
-  paragraphePrice.innerText = `${localStorageReturn[0].price}`;
 
   // ==========
-  const divCartItemContentSeting = document.createElement('div'); //<div></div>
-  const classCartItemContentSeting = document.createAttribute('class'); //class="cart__item__content__settings">
+
+  /*** <h2>Nom du produit</h2>
+   <p>Vert</p>
+   <p>42,ii €</p> */
+  const h2Name = document.createElement('h2');
+  const paragrapheColor = document.createElement('p');
+  const paragraphePrice = document.createElement('p');
+  h2Name.innerHTML = `${localStorageReturn[i].name}`;
+  paragrapheColor.innerText = ` ${localStorageReturn[i].color}`;
+  paragraphePrice.innerText = `${data[i].prix}`;
+
+  // ============
+
+  //<div class="cart__item__content__settings">
+  const divCartItemContentSeting = document.createElement('div');
+  const classCartItemContentSeting = document.createAttribute('class');
   classCartItemContentSeting.value = `cart__item__content__settings`;
 
   divCartItemContentSeting.setAttributeNode(classCartItemContentSeting);
   // ==========
 
-  const divCartItemContentSetingQuantity = document.createElement('div'); // <div></div>
-  const classCartItemContentSetingQuantity = document.createAttribute('class'); //class="cart__item__content__settings__quantity">
+  // <div class="cart__item__content__settings__quantity">
+  const divCartItemContentSetingQuantity = document.createElement('div');
+  const classCartItemContentSetingQuantity = document.createAttribute('class');
   classCartItemContentSetingQuantity.value = `cart__item__content__settings__quantity`;
-
   divCartItemContentSetingQuantity.setAttributeNode(classCartItemContentSetingQuantity);
-  // ==========
 
-  const paragraphQuantity = document.createElement('p'); // <p>Qté : </p>
-
+  // ================
+  // <p>Qté : </p>
+  const paragraphQuantity = document.createElement('p'); // 
   paragraphQuantity.innerText = `Qté :€`
+
+  // ===============
 
   // input
   const input = document.createElement('input')
-
-
-  input.setAttribute('type', 'number'); //<input
+  input.setAttribute('type', 'number');
   input.setAttribute('class', 'itemQuantity')
   input.setAttribute('name', 'itemQuantity')
   input.setAttribute('min', '1')
   input.setAttribute('max', '100')
-  input.setAttribute('value', '42')
-  // typeAtribut.appendChild(input);
-  // classItemQuantity.appendChild(input);
-  // input.appendChild(nameItemQuantity);
-  // input.appendChild(minValue);
-  // input.appendChild(maxValue);
-  // input.appendChild(value);
+  input.setAttribute('value', `${localStorageReturn[i].quantity}`);
 
-  const divCartItemContentSetingDelet = document.createElement('div'); //<div></div>
-  const classCartItemContentSetingDelet = document.createAttribute('class'); //class="cart__item__content__settings__delete">
+  //========================
 
+  //<div class="cart__item__content__settings__delete">
+  const divCartItemContentSetingDelet = document.createElement('div');
+  const classCartItemContentSetingDelet = document.createAttribute('class'); //
   classCartItemContentSetingDelet.value = `cart__item__content__settings__delete`;
   divCartItemContentSetingDelet.setAttributeNode(classCartItemContentSetingDelet);
 
+  //==============================
+  // <p>class="deleteItem">Supprimer...
   const paragrapheDeletItem = document.createElement('p')
-  paragrapheDeletItem.innerText = 'Supprimer'; // <p></p>
-  paragrapheDeletItem.setAttribute('class', 'deleteItem'); //class="deleteItem">Supprimer...
+  paragrapheDeletItem.innerText = 'Supprimer';
+  paragrapheDeletItem.setAttribute('class', 'deleteItem');
 
 
 
@@ -143,17 +159,27 @@ const nodeCart = () => {
   divCartItemContentSetingDelet.appendChild(paragrapheDeletItem);
 
 
-  //input montage
-
-  //divCartItemContentSetingQuantity.appendChild(input);
-
-
-
-
-
+  // ========
 
 
 }
 
 
-nodeCart();
+for (let i = 0; i < localStorageReturn.length; i++) {
+  nodeCart(i);
+
+  const inputDelet = document.querySelector('.deleteItem')
+  console.log(inputDelet);
+
+  inputDelet.addEventListener('click', (e) => {
+    e.preventDefault();
+    // je recupere id du click
+
+    // je supprime la commande avec la cle objet
+
+    // let idSelect = localStorage.setItem('commande', 'object');
+    // console.log(idSelect)
+  })
+}
+
+
