@@ -1,6 +1,20 @@
 // je cree une variable dans la quel je recupere un resultat de l'instance URL
 // (l'interface  URL est un objet qui fournit des methode Statique pour cree des URL )
 let articlId = new URL(location.href).searchParams.get('id');
+
+// function pour la creation des nodes de la page " DOM " 
+const textProductPage = (data) => {
+  // je cree mes balise que je vais integrer plus tard
+  const img = document.createElement('img');
+  // j'attache ma balise "img" a la class "item__img"
+  document.querySelector('.item__img').appendChild(img);
+  img.src = data.imageUrl // je rajoute la  src = "data.imageUrl"
+  // je selectionne les parents et je rajoute du texte
+  // le texte il sagit du retour Json avec les cle correspondantes
+  document.querySelector('#title').textContent = (`${data.name}`);
+  document.querySelector('#price').textContent = (`${data.price}`);
+  document.querySelector('#description').textContent = (`${data.description}`);
+}
 // je demande le retour de l'api avec fetch
 //celle ci me renvoie une promise j'appel then pour recuperer le resultat et verifier si celui ci est bien passé
 fetch(`http://localhost:3000/api/products/${articlId}`)
@@ -10,17 +24,9 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
     }
   })// ce dernier me renvoie encore une promise j'utilise encore then pour les recuperer
   .then(data => {
-    // je cree mes balise que je vais integrer plus tard
-    const img = document.createElement('img');
-    // j'attache ma balise "img" a la class "item__img"
-    document.querySelector('.item__img').appendChild(img);
-    img.src = data.imageUrl // je rajoute la  src = "data.imageUrl"
-    // je selectionne les parents et je rajoute du texte
-    // le texte il sagit du retour Json avec les cle correspondantes
-    document.querySelector('#title').textContent = (`${data.name}`);
-    document.querySelector('#price').textContent = (`${data.price}`);
-    document.querySelector('#description').textContent = (`${data.description}`);
+    textProductPage(data)
     // gestion des couleurs
+
     //je cree une variable qui sera un array avec [color1, color 2, color 3]
     let colorFromsApi = data.colors
     // je boucle sur la taille de chaque array avec comme incrementation
@@ -41,86 +47,58 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
       let localStorageReturn = JSON.parse(localStorage.getItem("commande"));
       // je cree une premiere condition pour verifier qu'il y'a bien une valeur a la quantiter
       if (valueQuantity > 0 && valueQuantity != 0 && valueQuantity <= 100) {
-        // je cree mon objet
-       const productCommande ={
+        // je cree mon objet qui sera envoyer au Local storage
+        const productCommande = {
           id: articlId,
           name: data.name,
           image: data.imageUrl,
           color: valueColors,
           quantity: Number(valueQuantity),
           description: data.description,
-        }  
+        }
 
-      // si je localstorage est plein je rentre dans le IF
-        if (localStorageReturn == null){
-        
-          localStorageReturn =[];
-          localStorageReturn.push(productCommande);
-          localStorage.setItem("commande", JSON.stringify(localStorageReturn));
-      
-        }else if (localStorageReturn != null ){
-         
+        // si je localstorage est null donc vide je rentre dans le IF
+        if (localStorageReturn == null) {
+
+          localStorageReturn = [];// jinitialise le tableau 
+          localStorageReturn.push(productCommande); // j'evoie la commande dans le tableau
+          localStorage.setItem("commande", JSON.stringify(localStorageReturn)); //j'envoie au local storage
+
+          // sinon Si le local storage est different de vide (donc plein)
+        } else if (localStorageReturn != null) {
+
+          // je boucle sur la taille des element sur le local storage pour modifier celui ci 
           for (let i = 0; i < localStorageReturn.length; i++) {
-            if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i].color == productCommande.color ) {
-           return(
-              localStorageReturn[i].quantity += productCommande.quantity,
-               localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
-               localStorageReturn = JSON.parse(localStorage.getItem('commande'))
-               );
+            // si les produit que j'envoie on le meme id et la meme couleur 
+            if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i].color == productCommande.color) {
+              // je renvoie uniquement la quantiter qu'il y'a dans ma commande au local storage
+              return (
+                localStorageReturn[i].quantity += productCommande.quantity,
+                localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
+                localStorageReturn = JSON.parse(localStorage.getItem('commande'))
+              );
             }
-          } for (let i = 0; i < localStorageReturn.length; i++) {      
-            if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i] != productCommande.color || localStorageReturn[i].id != productCommande.id ) {
-              return(
+
+          }
+          // je refair une boucle pour verifier une autre condition 
+          for (let i = 0; i < localStorageReturn.length; i++) {
+            // si le local storage a la meme id et une couleur differente je rentre dans cette condition 
+            if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i] != productCommande.color || localStorageReturn[i].id != productCommande.id) {
+              // je rajoute la commande entiere dans mon local storage
+              return (
                 localStorageReturn.push(productCommande),
                 localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
                 localStorageReturn = JSON.parse(localStorage.getItem('commande'))
               )
-             }            
+            }
           }
-         
+
+        }
       }
-    }
     })
   })
   .catch(err => {
     console.log(`vous avez une Erreur !! ${err}`);
   })
-
-
-
-
-
-  // =======================
-
-
-
-  // 1 -- Je recupere les valeurs que le clients choisie sous forme [array]
-  // 1 BIS -- Avant de les placer dans le local storage, je verifie si toutes les condition sont reunie 
-
-// condition 1 
-// {  si c'est vide je rajoute }
-// { si l'ID n'existe pas je rajoute}
-
-// condition 2
-// { si l'ID existe mais la couleur non Je rajoute}
-
-// condition 3 
-// {si id existe et la couleur aussi j'augmente la quantiter }
-
-
-// Solution  -- je cree 2 array  
-//       une qui est la commande en cours 
-//       une qui est la commande en sortie du local storage 
-// je les compare 
-
-
-
-  // 2 -- je passe ces valeurs dans le local storage sous forme de chaine de caractere 
-  // 2 BIS ou j'incremente la quantiter si il sagit du meme objet.
-  
-  // 3 -- je recupere ces valeurs sous forme d'objet 
-
-
-  // CEPENDENT  
 
 

@@ -7,8 +7,6 @@ const creatNode = (data, i) => {
   //<img/> => img
   //<h3></h3> => baliseH3
   //<p></p> => baliseP
-
-
   // ici j'attache le a je lui rajoute le href ainsie que le lien.
   let baliseA = document.createElement('a');
   document.querySelector('.items').appendChild(baliseA);
@@ -48,14 +46,12 @@ fetch('http://localhost:3000/api/products')
     }
   })// ce dernier me renvoie encore une promise j'utilise encore then pour les recuperer
   .then(data => {
-
     for (let i = 0; i < data.length; i++) {
       // je boucle sur ce resultat en appel de ma fonction creat node
       creatNode(data, i);
     }
   })
   .catch(err => {
-
     console.log(`vous avez une Erreur !! ${err}`);
   })
 

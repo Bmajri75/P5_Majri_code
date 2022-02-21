@@ -1,10 +1,10 @@
 // je recupere les donnes du LocalStorage
 const localStorageReturn = JSON.parse(localStorage.getItem("commande"));
 
-// total Quantity 
+// calcule du total Quantity 
 const totalQuantity = () => {
-  // variable Initialisees 
   const quantityTotalArray = [];
+  // variable Initialisees 
   // je boucle sur le tableau du localStorage
   // je recupere les donnée dans commandeArray
   for (let i = 0; i < localStorageReturn.length; i++) {
@@ -19,25 +19,21 @@ const totalQuantity = () => {
   return totalValue
 }
 
+// initialisation de l'array 
+const prixTotalArray = [];
+// calcul du prix total de la commande 
 const totalPrice = (data, i) => {
-  // variable Initialisees 
-  const prixTotalArray = [];
-  // for (let i = 0; i < localStorageReturn.length; i++) {
 
   prixTotalArray.push(data.price * localStorageReturn[i].quantity);
-  console.log(prixTotalArray)
-  // }
   const totalsolde = prixTotalArray.reduce(
     (pre, cur) => pre + cur,
   );
   return totalsolde
 }
-//}
 
 
-//cree la page dynamiquement
 
-
+//cree la page DOM
 const nodeCart = (data, i) => {
   const cartItemsId = document.querySelector('#cart__items'); // je prend cart__items je le place dans la variable
   // ==========
@@ -188,15 +184,22 @@ const getFetchApi = () => {
       })
       .then(data => {
         nodeCart(data, i)
-        totalQuantity();
-        totalPrice(data, i);
-
       })
       .catch(err => {
         console.log(`vous avez une Erreur !! ${err}`);
       })
   }
 }
+
+
+
+// const quantityPlus = async (modificationQuantity) => {
+//   await modificationQuantity
+//   console.log("fonction plus")
+// }
+
+// modificationQuantity()
+
 
 getFetchApi()
 
