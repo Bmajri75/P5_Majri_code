@@ -165,18 +165,21 @@ const nodeCart = (data, i) => {
   document.querySelector('#totalQuantity').innerHTML = `${totalQuantity()}`;
   document.querySelector('#totalPrice').innerHTML = `${totalPrice(data, i)}`;
 
+  // appel du formulaire et des Verification 
+  validityFormulaire(i);
+
 }
 
 //creation du formulaire de verification 
-const validityFormulaire = () => {
+const validityFormulaire = (i) => {
   // selection de la balise formulaire 
   const formulaire = document.querySelector(".cart__order__form");
-  const prenomValid = formulaire.firstName;
   // Ajout des verifications
   const caractereVerif = /^[a-zA-Z ]+$/
   const emailCharVerif = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-  //modification du prénom
+  //prénom
+  const prenomValid = formulaire.firstName;
   prenomValid.addEventListener('change', () => {
     if (caractereVerif.test(prenomValid.value)) {
       prenomValid
@@ -226,8 +229,27 @@ const validityFormulaire = () => {
       alert(`votre Email ${emailValid.value} n'est pas valid.`);
     }
   });
+
+
+  // l'objet Contact 
+
+  const contact = {
+    prenom: prenomValid.value,
+    nom: nomValid.value,
+    address: adresseValid.value,
+    ville: villeValid.value,
+    email: emailValid.value
+  }
+
+
+  const productArray = [];
+
+  productArray.push(localStorageReturn)
+
+
+  console.log(productArray)
 }
-validityFormulaire();
+
 
 
 //nom, aucun chiffre 
@@ -255,7 +277,7 @@ const getFetchApi = () => {
     fetch(`http://localhost:3000/api/products/${localStorageReturn[i].id}`)
       .then(res => {
         if (res.ok) {
-          return res.json() // si tout est ok j'ai un retour dans res que je convertie en format json ()
+          return res.json() // si tout est ok j'ai un retour que je convertie en format json ()
         }
       })
       .then(data => {
