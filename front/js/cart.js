@@ -1,6 +1,5 @@
 // je recupere les donnes du LocalStorage
 const localStorageReturn = JSON.parse(localStorage.getItem("commande"));
-
 // calcule du total Quantity 
 const totalQuantity = () => {
   const quantityTotalArray = [];
@@ -18,7 +17,6 @@ const totalQuantity = () => {
   );
   return totalValue
 }
-
 // initialisation de l'array 
 const prixTotalArray = [];
 // calcul du prix total de la commande 
@@ -30,9 +28,6 @@ const totalPrice = (data, i) => {
   );
   return totalsolde
 }
-
-
-
 //cree la page DOM
 const nodeCart = (data, i) => {
   const cartItemsId = document.querySelector('#cart__items'); // je prend cart__items je le place dans la variable
@@ -97,7 +92,7 @@ const nodeCart = (data, i) => {
   const paragraphePrice = document.createElement('p');
   h2Name.innerHTML = `${localStorageReturn[i].name}`;
   paragrapheColor.innerText = ` ${localStorageReturn[i].color}`;
-  paragraphePrice.innerText = `${data.price * localStorageReturn[i].quantity} €`;
+  paragraphePrice.innerText = `${data.price} €`;
 
   // ============
 
@@ -133,17 +128,17 @@ const nodeCart = (data, i) => {
 
   //========================
 
-  //<div class="cart__item__content__settings__delete">
-  const divCartItemContentSetingDelet = document.createElement('div');
-  const classCartItemContentSetingDelet = document.createAttribute('class'); //
-  classCartItemContentSetingDelet.value = `cart__item__content__settings__delete`;
-  divCartItemContentSetingDelet.setAttributeNode(classCartItemContentSetingDelet);
+  //<div class="cart__item__content__settings__deconste">
+  const divCartItemContentSetingDeconst = document.createElement('div');
+  const classCartItemContentSetingDeconst = document.createAttribute('class'); //
+  classCartItemContentSetingDeconst.value = `cart__item__content__settings__deconste`;
+  divCartItemContentSetingDeconst.setAttributeNode(classCartItemContentSetingDeconst);
 
   //==============================
-  // <p>class="deleteItem">Supprimer...
-  const paragrapheDeletItem = document.createElement('p')
-  paragrapheDeletItem.innerText = 'Supprimer';
-  paragrapheDeletItem.setAttribute('class', 'deleteItem');
+  // <p>class="deconsteItem">Supprimer...
+  const paragrapheDeconstItem = document.createElement('p')
+  paragrapheDeconstItem.innerText = 'Supprimer';
+  paragrapheDeconstItem.setAttribute('class', 'deconsteItem');
 
 
 
@@ -160,8 +155,8 @@ const nodeCart = (data, i) => {
   divCartItemContentSeting.appendChild(divCartItemContentSetingQuantity);
   divCartItemContentSetingQuantity.appendChild(paragraphQuantity);
   divCartItemContentSetingQuantity.appendChild(input);
-  divCartItemContentSeting.appendChild(divCartItemContentSetingDelet);
-  divCartItemContentSetingDelet.appendChild(paragrapheDeletItem);
+  divCartItemContentSeting.appendChild(divCartItemContentSetingDeconst);
+  divCartItemContentSetingDeconst.appendChild(paragrapheDeconstItem);
 
   // ========
 
@@ -172,8 +167,89 @@ const nodeCart = (data, i) => {
 
 }
 
+//creation du formulaire de verification 
+const validityFormulaire = () => {
+  // selection de la balise formulaire 
+  const formulaire = document.querySelector(".cart__order__form");
+  const prenomValid = formulaire.firstName;
+  // Ajout des verifications
+  const caractereVerif = /^[a-zA-Z ]+$/
+  const emailCharVerif = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
+  //modification du prénom
+  prenomValid.addEventListener('change', () => {
+    if (caractereVerif.test(prenomValid.value)) {
+      prenomValid
+    } else {
+      alert(`votre prenom ${prenomValid.value} n'est pas valid.`);
+    }
+  });
+
+
+  // Nom 
+  const nomValid = formulaire.lastName;
+  nomValid.addEventListener('change', () => {
+    if (caractereVerif.test(nomValid.value)) {
+      nomValid
+    } else {
+      alert(`votre prenom ${nomValid.value} n'est pas valid.`);
+    }
+  });
+
+  // adresse
+  const adresseValid = formulaire.address;
+  adresseValid.addEventListener('change', () => {
+    if (adresseValid.value == false) {
+      alert(`votre adresse est vide .`);
+    } else {
+      adresseValid
+    }
+  });
+
+  // Ville
+  const villeValid = formulaire.city;
+
+  villeValid.addEventListener('change', () => {
+    if (caractereVerif.test(villeValid.value)) {
+      villeValid
+    } else {
+      alert(`votre prenom ${villeValid.value} n'est pas valid.`);
+    }
+  });
+
+  //Email
+  const emailValid = formulaire.email;
+  emailValid.addEventListener('change', () => {
+    if (emailCharVerif.test(emailValid.value)) {
+      emailValid
+    } else {
+      alert(`votre Email ${emailValid.value} n'est pas valid.`);
+    }
+  });
+}
+validityFormulaire();
+
+
+//nom, aucun chiffre 
+
+//adresse, ville, 
+
+//email il faut absolument un [ @ ]
+
+//verifier le FORMAT ET TYPE.
+
+
+// Les inputs des utilisateurs doivent être analysés et validés pour vérifier le format et le type
+// de données avant l’envoi à l’API.
+
+//Il ne serait par exemple pas recevable d’accepter un prénom contenant [des chiffres, ou une adresse e-mail ne contenant pas de symbole “@”.]
+//  En cas de problème de saisie, un message d’erreur devra être affiché en dessous du champ correspondant.
+
+
+
+// fonction recuperation des donnée de l'API
 const getFetchApi = () => {
+
   for (let i = 0; i < localStorageReturn.length; i++) {
 
     fetch(`http://localhost:3000/api/products/${localStorageReturn[i].id}`)
@@ -184,6 +260,7 @@ const getFetchApi = () => {
       })
       .then(data => {
         nodeCart(data, i)
+
       })
       .catch(err => {
         console.log(`vous avez une Erreur !! ${err}`);
@@ -193,12 +270,6 @@ const getFetchApi = () => {
 
 
 
-// const quantityPlus = async (modificationQuantity) => {
-//   await modificationQuantity
-//   console.log("fonction plus")
-// }
-
-// modificationQuantity()
 
 
 getFetchApi()
@@ -207,20 +278,6 @@ getFetchApi()
 
 
 
-//  bouton supprimer
-// for (let i = 0; i < localStorageReturn.length; i++) {
 
-//   const inputDelet = document.querySelector('.deleteItem')
-//   console.log(inputDelet);
-//   inputDelet.addEventListener('click', (e) => {
-//     e.preventDefault();
-//     // je recupere id du click
-
-//     // je supprime la commande avec la cle objet
-
-//     // let idSelect = localStorage.setItem('commande', 'object');
-//     // console.log(idSelect)
-//   })
-// }
 
 
