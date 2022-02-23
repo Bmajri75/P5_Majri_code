@@ -84,7 +84,7 @@ const nodeCart = (data, i) => {
 
   // ==========
 
-  /*** <h2>Nom du produit</h2>
+  /*** <h2>lastName du produit</h2>
    <p>Vert</p>
    <p>42,ii €</p> */
   const h2Name = document.createElement('h2');
@@ -161,111 +161,131 @@ const nodeCart = (data, i) => {
   // ========
 
   // TOTAL 
-
   document.querySelector('#totalQuantity').innerHTML = `${totalQuantity()}`;
   document.querySelector('#totalPrice').innerHTML = `${totalPrice(data, i)}`;
-
-  // appel du formulaire et des Verification 
-  validityFormulaire(i);
 
 }
 
 //creation du formulaire de verification 
-const validityFormulaire = (i) => {
+const validityFormulaire = () => {
   // selection de la balise formulaire 
   const formulaire = document.querySelector(".cart__order__form");
   // Ajout des verifications
   const caractereVerif = /^[a-zA-Z ]+$/
   const emailCharVerif = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-  //prénom
-  const prenomValid = formulaire.firstName;
-  prenomValid.addEventListener('change', () => {
-    if (caractereVerif.test(prenomValid.value)) {
-      prenomValid
+  //creation d'objet pour recup les donee a utiliser
+  const objContact = {
+    firstName: formulaire.firstName,
+    lastName: formulaire.lastName,
+    address: formulaire.address,
+    city: formulaire.city,
+    email: formulaire.email
+  }
+
+
+
+  //prélastName
+  objContact.firstName.addEventListener('change', () => {
+    if (caractereVerif.test(objContact.firstName.value)) {
+      objContact.firstName
     } else {
-      alert(`votre prenom ${prenomValid.value} n'est pas valid.`);
+      alert(`votre prelastName ${objContact.firstName.value} n'est pas valid.`);
     }
   });
 
 
-  // Nom 
-  const nomValid = formulaire.lastName;
-  nomValid.addEventListener('change', () => {
-    if (caractereVerif.test(nomValid.value)) {
-      nomValid
+  // nom 
+  objContact.lastName.addEventListener('change', () => {
+    if (caractereVerif.test(objContact.lastName.value)) {
+      objContact.lastName
     } else {
-      alert(`votre prenom ${nomValid.value} n'est pas valid.`);
+      alert(`votre Nom ${objContact.lastName.value} n'est pas valid.`);
     }
   });
 
   // adresse
-  const adresseValid = formulaire.address;
-  adresseValid.addEventListener('change', () => {
-    if (adresseValid.value == false) {
+  objContact.address.addEventListener('change', () => {
+    if (objContact.address.value == false) {
       alert(`votre adresse est vide .`);
     } else {
-      adresseValid
+      objContact.address
     }
   });
 
-  // Ville
-  const villeValid = formulaire.city;
+  // ville
 
-  villeValid.addEventListener('change', () => {
-    if (caractereVerif.test(villeValid.value)) {
-      villeValid
+  objContact.city.addEventListener('change', () => {
+    if (caractereVerif.test(objContact.city.value)) {
+      objContact.city
     } else {
-      alert(`votre prenom ${villeValid.value} n'est pas valid.`);
+      alert(`votre ville ${objContact.city.value} n'est pas valid.`);
     }
   });
 
   //Email
-  const emailValid = formulaire.email;
-  emailValid.addEventListener('change', () => {
-    if (emailCharVerif.test(emailValid.value)) {
-      emailValid
+  objContact.email.addEventListener('change', () => {
+    if (emailCharVerif.test(objContact.email.value)) {
+      objContact.email
     } else {
-      alert(`votre Email ${emailValid.value} n'est pas valid.`);
+      alert(`votre Email ${objContact.email.value} n'est pas valid.`);
     }
   });
 
+  const sendCommande = () => {
+    // initialise mon tableau
+    const productID = [];
+    const order = {
+      contact: {
+        firstName: formulaire.firstName.value,
+        lastName: formulaire.lastName.value,
+        address: formulaire.address.value,
+        city: formulaire.city.value,
+        email: formulaire.email.value
+      },
+      product: productID,
+    }
 
-  // l'objet Contact 
+    // iteration sur le retour de localstorage langth
+    for (let i = 0; i < localStorageReturn.length; i++) {
+      productID.push(localStorageReturn[i])
+    }
 
-  const contact = {
-    prenom: prenomValid.value,
-    nom: nomValid.value,
-    address: adresseValid.value,
-    ville: villeValid.value,
-    email: emailValid.value
+    // selection de la balise order 
+    const btnEnvoyer = document.querySelector('#order');
+
+    // au click du btnEnvoyer
+    btnEnvoyer.addEventListener('click', (e) => {
+      console.log(productID)
+
+      const options = {
+        method: 'POST',
+        body: JSON.stringify(order),
+        headers: {
+          'Accept': 'application/json',
+          "Content-Type": "application/json"
+        },
+      };
+
+      fetch("http://localhost:3000/api/products/order", options)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          // localStorage.clear();
+          //   localStorage.setItem('commande', data.productID);
+
+          document.location.href = 'confirmation.html';
+        })
+        .catch((err) => {
+          console.log(`vous avez une erreur :  ${err}`)
+        })
+
+
+    })
   }
 
-
-  const productArray = [];
-
-  productArray.push(localStorageReturn)
-
-
-  console.log(productArray)
+  sendCommande()
 }
-
-
-
-//nom, aucun chiffre 
-
-//adresse, ville, 
-
-//email il faut absolument un [ @ ]
-
-//verifier le FORMAT ET TYPE.
-
-
-// Les inputs des utilisateurs doivent être analysés et validés pour vérifier le format et le type
-// de données avant l’envoi à l’API.
-
-//Il ne serait par exemple pas recevable d’accepter un prénom contenant [des chiffres, ou une adresse e-mail ne contenant pas de symbole “@”.]
-//  En cas de problème de saisie, un message d’erreur devra être affiché en dessous du champ correspondant.
 
 
 
@@ -289,11 +309,7 @@ const getFetchApi = () => {
       })
   }
 }
-
-
-
-
-
+validityFormulaire();
 getFetchApi()
 
 
