@@ -1,5 +1,30 @@
 // je recupere les donnes du LocalStorage
 const localStorageReturn = JSON.parse(localStorage.getItem("commande"));
+
+
+
+const getFetchApi = () => {
+
+  for (let i = 0; i < localStorageReturn.length; i++) {
+
+    fetch(`http://localhost:3000/api/products/${localStorageReturn[i].id}`)
+      .then(res => {
+        if (res.ok) {
+          return res.json() // si tout est ok j'ai un retour que je convertie en format json ()
+        }
+      })
+      .then(data => {
+        nodeCart(data, i)
+
+      })
+      .catch(err => {
+        console.log(`vous avez une Erreur !! ${err}`);
+      })
+  }
+}
+getFetchApi();
+
+
 // calcule du total Quantity 
 const totalQuantity = () => {
   const quantityTotalArray = [];
@@ -17,7 +42,8 @@ const totalQuantity = () => {
   );
   return totalValue
 }
-// initialisation de l'array 
+
+// initialisation de l'array pour le calcule total prix 
 const prixTotalArray = [];
 // calcul du prix total de la commande 
 const totalPrice = (data, i) => {
@@ -28,10 +54,12 @@ const totalPrice = (data, i) => {
   );
   return totalsolde
 }
+
 //cree la page DOM
 const nodeCart = (data, i) => {
   const cartItemsId = document.querySelector('#cart__items'); // je prend cart__items je le place dans la variable
   // ==========
+
   // je cree mes element et Attributs 
   const articleElem = document.createElement('article'); //<article></article>
   const classCartItem = document.createAttribute('class');  //class="cart__item"
@@ -166,151 +194,134 @@ const nodeCart = (data, i) => {
 
 }
 
+// fonction recuperation des donnée de l'API
+
+
+
 //creation du formulaire de verification 
 const validityFormulaire = () => {
   // selection de la balise formulaire 
-  const formulaire = document.querySelector(".cart__order__form");
+  const formFirstName = document.querySelector('#firstName').value;
+  const formLastName = document.querySelector('#lastName').value;
+  const formAddress = document.querySelector('#address').value;
+  const formCity = document.querySelector('#city').value;
+  const formEmail = document.querySelector('#email').value;
+
   // Ajout des verifications
   const caractereVerif = /^[a-zA-Z ]+$/
   const emailCharVerif = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-  //creation d'objet pour recup les donee a utiliser
-  const objContact = {
-    firstName: formulaire.firstName,
-    lastName: formulaire.lastName,
-    address: formulaire.address,
-    city: formulaire.city,
-    email: formulaire.email
-  }
 
-
-
-  //prélastName
-  objContact.firstName.addEventListener('change', () => {
-    if (caractereVerif.test(objContact.firstName.value)) {
-      objContact.firstName
+  //Prenom
+  document.querySelector('#firstName').addEventListener('change', () => {
+    if (caractereVerif.test(formFirstName)) {
+      formFirstName.innerHTML = ' ';
     } else {
-      alert(`votre prelastName ${objContact.firstName.value} n'est pas valid.`);
+      formFirstName.innerHTML = `votre ville ${formFirstName} n'est pas valid.`;
     }
   });
 
 
   // nom 
-  objContact.lastName.addEventListener('change', () => {
-    if (caractereVerif.test(objContact.lastName.value)) {
-      objContact.lastName
+  document.querySelector('#lastName').addEventListener('change', () => {
+    if (caractereVerif.test(formLastName)) {
+      formLastName.innerHTML = ' '
     } else {
-      alert(`votre Nom ${objContact.lastName.value} n'est pas valid.`);
+      formLastName.innerHTML = `votre ville ${formLastName} n'est pas valid.`;
     }
   });
 
-  // adresse
-  objContact.address.addEventListener('change', () => {
-    if (objContact.address.value == false) {
-      alert(`votre adresse est vide .`);
+  // addresse
+  document.querySelector('#address').addEventListener('change', () => {
+    if (formAddress.value == false) {
+      formAddress.innerHTML = `votre adresse ${formAddress} n'est pas valid.`;
     } else {
-      objContact.address
+      formAddress.innerHTML = ' '
     }
   });
 
   // ville
-
-  objContact.city.addEventListener('change', () => {
-    if (caractereVerif.test(objContact.city.value)) {
-      objContact.city
+  document.querySelector('#city').addEventListener('change', () => {
+    if (caractereVerif.test(formCity)) {
+      formCity.innerHTML = ' '
     } else {
-      alert(`votre ville ${objContact.city.value} n'est pas valid.`);
+      formCity.innerHTML = `votre ville ${formCity} n'est pas valid.`;
     }
   });
 
   //Email
-  objContact.email.addEventListener('change', () => {
-    if (emailCharVerif.test(objContact.email.value)) {
-      objContact.email
+  document.querySelector('#email').addEventListener('change', () => {
+    if (emailCharVerif.test(formEmail)) {
+      formEmail.innerHTML = ' '
     } else {
-      alert(`votre Email ${objContact.email.value} n'est pas valid.`);
+      formEmail.innerHTML = `votre ville ${formEmail} n'est pas valid.`;
     }
   });
+}
 
-  const sendCommande = () => {
+validityFormulaire();
+
+// j'envoie la commande au backend
+const sendCmd = () => {
+  // selection de la balise order 
+  const btnEnvoyer = document.querySelector('#order');
+
+  // au click du btnEnvoyer
+  btnEnvoyer.addEventListener('click', (e) => {
+    e.preventDefault();
+
     // initialise mon tableau
-    const productID = [];
-    const order = {
-      contact: {
-        firstName: formulaire.firstName.value,
-        lastName: formulaire.lastName.value,
-        address: formulaire.address.value,
-        city: formulaire.city.value,
-        email: formulaire.email.value
-      },
-      product: productID,
-    }
+    const products = [];
 
     // iteration sur le retour de localstorage langth
     for (let i = 0; i < localStorageReturn.length; i++) {
-      productID.push(localStorageReturn[i])
+      products.push(localStorageReturn[i].id)
     }
 
-    // selection de la balise order 
-    const btnEnvoyer = document.querySelector('#order');
-
-    // au click du btnEnvoyer
-    btnEnvoyer.addEventListener('click', (e) => {
-      console.log(productID)
-
-      const options = {
-        method: 'POST',
-        body: JSON.stringify(order),
-        headers: {
-          'Accept': 'application/json',
-          "Content-Type": "application/json"
-        },
-      };
-
-      fetch("http://localhost:3000/api/products/order", options)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          // localStorage.clear();
-          //   localStorage.setItem('commande', data.productID);
-
-          document.location.href = 'confirmation.html';
-        })
-        .catch((err) => {
-          console.log(`vous avez une erreur :  ${err}`)
-        })
+    const order = {
+      contact: {
+        firstName: document.querySelector('#firstName').value,
+        lastName: document.querySelector('#lastName').value,
+        address: document.querySelector('#address').value,
+        city: document.querySelector('#city').value,
+        email: document.querySelector('#email').value,
+      },
+      products
+    }
 
 
-    })
-  }
+    // je place dans la const option les parametre de mon fetch que je vais faire apres 
+    const options = {
+      method: 'POST', // j'indique que c'est une methode POST car Fetch par defaut envoie un GET
+      body: JSON.stringify(order), // j'indique qu'il sagit de l'objet order sous forme de string pour etre un JSON
+      headers: {
+        'Accept': 'application/json',
+        "Content-Type": "application/json"// je lui dit qu'il faut lire en JSON
+      },
+    };
 
-  sendCommande()
+    fetch("http://localhost:3000/api/products/order", options)
+      .then((response) => response.json())
+      .then((data) => {
+        // je recupere un objet avec le resumer de ma commande les ID et surtout le numero de confirmation 
+        localStorage.setItem('numeroCmd', data.orderId);// je demande a envoyer directement au Local Storage le Id de confirmation avec la key numeroCMD 
+        document.location.href = '../html/confirmation.html'// j'indique la page qui dois apparaitre 
+
+      })
+      .catch((err) => {
+        console.log(`vous avez une erreur :  ${err}`)
+      })
+  })
+
 }
+sendCmd();
 
 
 
-// fonction recuperation des donnée de l'API
-const getFetchApi = () => {
 
-  for (let i = 0; i < localStorageReturn.length; i++) {
 
-    fetch(`http://localhost:3000/api/products/${localStorageReturn[i].id}`)
-      .then(res => {
-        if (res.ok) {
-          return res.json() // si tout est ok j'ai un retour que je convertie en format json ()
-        }
-      })
-      .then(data => {
-        nodeCart(data, i)
 
-      })
-      .catch(err => {
-        console.log(`vous avez une Erreur !! ${err}`);
-      })
-  }
-}
-validityFormulaire();
-getFetchApi()
+
 
 
 
