@@ -6,6 +6,7 @@ let articlId = new URL(location.href).searchParams.get('id');
 const textProductPage = (data) => {
   // je cree mes balise que je vais integrer plus tard
   const img = document.createElement('img');
+
   // j'attache ma balise "img" a la class "item__img"
   document.querySelector('.item__img').appendChild(img);
   img.src = data.imageUrl // je rajoute la  src = "data.imageUrl"
@@ -44,7 +45,8 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
       const valueQuantity = document.querySelector("#quantity").value;
 
       // je fait une initialisation du localStorage 
-      let localStorageReturn = JSON.parse(localStorage.getItem("commande"));
+      let localStorageReturn = []
+      localStorageReturn = JSON.parse(localStorage.getItem("commande"));
       // je cree une premiere condition pour verifier qu'il y'a bien une valeur a la quantiter
       if (valueQuantity > 0 && valueQuantity != 0 && valueQuantity <= 100) {
         // je cree mon objet qui sera envoyer au Local storage
@@ -60,10 +62,10 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
         // si je localstorage est null donc vide je rentre dans le IF
         if (localStorageReturn == null) {
 
-          localStorageReturn = [];// jinitialise le tableau 
+          let localStorageReturn = [];
           localStorageReturn.push(productCommande); // j'evoie la commande dans le tableau
           localStorage.setItem("commande", JSON.stringify(localStorageReturn)); //j'envoie au local storage
-
+          alert(` votre produit : ${productCommande.name} quantiter : ${productCommande.quantity} est dans votre panier `);
           // sinon Si le local storage est different de vide (donc plein)
         } else if (localStorageReturn != null) {
 
@@ -76,20 +78,23 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
                 localStorageReturn[i].quantity += productCommande.quantity,
                 localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
                 localStorageReturn = JSON.parse(localStorage.getItem('commande'))
-              );
+              ),
+                alert(` Ajout de ${productCommande.quantity} à votre Panier `)
             }
 
           }
           // je refair une boucle pour verifier une autre condition 
           for (let i = 0; i < localStorageReturn.length; i++) {
             // si le local storage a la meme id et une couleur differente je rentre dans cette condition 
-            if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i] != productCommande.color || localStorageReturn[i].id != productCommande.id) {
+            if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i].color != productCommande.color || localStorageReturn[i].id != productCommande.id) {
               // je rajoute la commande entiere dans mon local storage
               return (
                 localStorageReturn.push(productCommande),
                 localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
-                localStorageReturn = JSON.parse(localStorage.getItem('commande'))
+                localStorageReturn = JSON.parse(localStorage.getItem('commande')),
+                alert(` Ajout de : ${productCommande.name} couleur : ${productCommande.color} à votre Panier `)
               )
+
             }
           }
 

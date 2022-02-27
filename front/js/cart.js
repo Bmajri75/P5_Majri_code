@@ -1,6 +1,5 @@
 // je recupere les donnes du LocalStorage
-const localStorageReturn = JSON.parse(localStorage.getItem("commande"));
-
+let localStorageReturn = JSON.parse(localStorage.getItem("commande"));
 
 
 const getFetchApi = () => {
@@ -156,17 +155,17 @@ const nodeCart = (data, i) => {
 
   //========================
 
-  //<div class="cart__item__content__settings__deconste">
-  const divCartItemContentSetingDeconst = document.createElement('div');
-  const classCartItemContentSetingDeconst = document.createAttribute('class'); //
-  classCartItemContentSetingDeconst.value = `cart__item__content__settings__deconste`;
-  divCartItemContentSetingDeconst.setAttributeNode(classCartItemContentSetingDeconst);
+  //<div class="cart__item__content__settings__delete">
+  const divCartItemContentSetingDelete = document.createElement('div');
+  const classCartItemContentSetingDelete = document.createAttribute('class'); //
+  classCartItemContentSetingDelete.value = `cart__item__content__settings__delete`;
+  divCartItemContentSetingDelete.setAttributeNode(classCartItemContentSetingDelete);
 
   //==============================
-  // <p>class="deconsteItem">Supprimer...
+  // <p>class="deleteItem">Supprimer...
   const paragrapheDeconstItem = document.createElement('p')
   paragrapheDeconstItem.innerText = 'Supprimer';
-  paragrapheDeconstItem.setAttribute('class', 'deconsteItem');
+  paragrapheDeconstItem.setAttribute('class', 'deleteItem');
 
 
 
@@ -183,8 +182,8 @@ const nodeCart = (data, i) => {
   divCartItemContentSeting.appendChild(divCartItemContentSetingQuantity);
   divCartItemContentSetingQuantity.appendChild(paragraphQuantity);
   divCartItemContentSetingQuantity.appendChild(input);
-  divCartItemContentSeting.appendChild(divCartItemContentSetingDeconst);
-  divCartItemContentSetingDeconst.appendChild(paragrapheDeconstItem);
+  divCartItemContentSeting.appendChild(divCartItemContentSetingDelete);
+  divCartItemContentSetingDelete.appendChild(paragrapheDeconstItem);
 
   // ========
 
@@ -192,10 +191,28 @@ const nodeCart = (data, i) => {
   document.querySelector('#totalQuantity').innerHTML = `${totalQuantity()}`;
   document.querySelector('#totalPrice').innerHTML = `${totalPrice(data, i)}`;
 
+
+
+
+  const deleteBtn = document.querySelectorAll(".deleteItem");
+
+
+  deleteBtn[i].addEventListener('click', (e) => {
+    e.preventDefault();
+
+    // je filtre sur le tableau recuperer par mes donee du localStorage.
+    // 1 -- je cree un nouveau tableau qui renvoie toutes les commandes SAUF celle qui a le meme id de la commande du bouton Supprimer et  aussi la meme couleur pour eviter de suprimer les meme produit (car ils on le meme Id)
+    localStorageReturn = localStorageReturn.filter((item) => item.id !== localStorageReturn[i].id || item.color !== localStorageReturn[i].color);
+
+    localStorage.setItem("commande", JSON.stringify(localStorageReturn)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
+    alert(` Votre commande est bien enlevé du panier `); // j'allerte mon clients 
+    location.reload(); // je recharge la page avec le nouveau tableau
+  })
+
+
+
+
 }
-
-// fonction recuperation des donnée de l'API
-
 
 
 //creation du formulaire de verification 
@@ -207,17 +224,18 @@ const validityFormulaire = () => {
   const formCity = document.querySelector('#city').value;
   const formEmail = document.querySelector('#email').value;
 
+
   // Ajout des verifications
   const caractereVerif = /^[a-zA-Z ]+$/
   const emailCharVerif = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-
+  const adresseVerif = /^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/;
 
   //Prenom
   document.querySelector('#firstName').addEventListener('change', () => {
     if (caractereVerif.test(formFirstName)) {
       formFirstName.innerHTML = ' ';
     } else {
-      formFirstName.innerHTML = `votre ville ${formFirstName} n'est pas valid.`;
+      alert(`votre prenon ${formFirstName} n'est pas valid.`);
     }
   });
 
@@ -227,16 +245,16 @@ const validityFormulaire = () => {
     if (caractereVerif.test(formLastName)) {
       formLastName.innerHTML = ' '
     } else {
-      formLastName.innerHTML = `votre ville ${formLastName} n'est pas valid.`;
+      alert(`votre nom ${formLastName} n'est pas valid.`);
     }
   });
 
   // addresse
   document.querySelector('#address').addEventListener('change', () => {
-    if (formAddress.value == false) {
-      formAddress.innerHTML = `votre adresse ${formAddress} n'est pas valid.`;
-    } else {
+    if (adresseVerif.test(formAddress)) {
       formAddress.innerHTML = ' '
+    } else {
+      alert(`votre adresse ${formAddress} n'est pas valid.`);
     }
   });
 
@@ -245,7 +263,7 @@ const validityFormulaire = () => {
     if (caractereVerif.test(formCity)) {
       formCity.innerHTML = ' '
     } else {
-      formCity.innerHTML = `votre ville ${formCity} n'est pas valid.`;
+      alert(`votre ville ${formCity} n'est pas valid.`);
     }
   });
 
@@ -254,7 +272,7 @@ const validityFormulaire = () => {
     if (emailCharVerif.test(formEmail)) {
       formEmail.innerHTML = ' '
     } else {
-      formEmail.innerHTML = `votre ville ${formEmail} n'est pas valid.`;
+      alert(`votre email ${formEmail} n'est pas valid.`);
     }
   });
 }
@@ -315,6 +333,8 @@ const sendCmd = () => {
 
 }
 sendCmd();
+
+
 
 
 
