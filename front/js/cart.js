@@ -203,10 +203,18 @@ const nodeCart = (data, i) => {
     // je filtre sur le tableau recuperer par mes donee du localStorage.
     // 1 -- je cree un nouveau tableau qui renvoie toutes les commandes SAUF celle qui a le meme id de la commande du bouton Supprimer et  aussi la meme couleur pour eviter de suprimer les meme produit (car ils on le meme Id)
     localStorageReturn = localStorageReturn.filter((item) => item.id !== localStorageReturn[i].id || item.color !== localStorageReturn[i].color);
-
-    localStorage.setItem("commande", JSON.stringify(localStorageReturn)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
-    alert(` Votre commande est bien enlevé du panier `); // j'allerte mon clients 
-    location.reload(); // je recharge la page avec le nouveau tableau
+    if (localStorageReturn.length > 0) {
+      localStorage.setItem("commande", JSON.stringify(localStorageReturn)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
+      alert(` Votre commande est bien enlevé du panier `); // j'allerte mon clients 
+      location.reload(); // je recharge la page avec le nouveau tableau
+    } else if (localStorageReturn.length = 1) {
+      const choix = confirm(` Votre Votre panier va être vide `); // j'allerte mon clients 
+      if (choix) {
+        localStorage.clear();
+        alert(` Votre commande est bien enlevé du panier `); // j'allerte mon clients 
+        location.reload(); // je recharge la page avec le nouveau tableau
+      }
+    }
   })
 
 
@@ -218,61 +226,61 @@ const nodeCart = (data, i) => {
 //creation du formulaire de verification 
 const validityFormulaire = () => {
   // selection de la balise formulaire 
-  const formFirstName = document.querySelector('#firstName').value;
-  const formLastName = document.querySelector('#lastName').value;
-  const formAddress = document.querySelector('#address').value;
-  const formCity = document.querySelector('#city').value;
-  const formEmail = document.querySelector('#email').value;
+  const formFirstName = document.querySelector('#firstName');
+  const formLastName = document.querySelector('#lastName');
+  const formAddress = document.querySelector('#address');
+  const formCity = document.querySelector('#city');
+  const formEmail = document.querySelector('#email');
 
 
   // Ajout des verifications
-  const caractereVerif = /^[a-zA-Z ]+$/
+  const caractereVerif = /^[a-zA-Z ,.'-]+$/
   const emailCharVerif = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   const adresseVerif = /^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/;
 
   //Prenom
-  document.querySelector('#firstName').addEventListener('change', () => {
-    if (caractereVerif.test(formFirstName)) {
-      formFirstName.innerHTML = ' ';
+  formFirstName.addEventListener('change', () => {
+    if (caractereVerif.test(formFirstName.value)) {
+      document.querySelector('#firstNameErrorMsg').innerHTML = ' ';
     } else {
-      alert(`votre prenon ${formFirstName} n'est pas valid.`);
+      document.querySelector('#firstNameErrorMsg').innerHTML = `votre prenon ${formFirstName.value} n'est pas valid.`;
     }
   });
 
 
   // nom 
-  document.querySelector('#lastName').addEventListener('change', () => {
-    if (caractereVerif.test(formLastName)) {
-      formLastName.innerHTML = ' '
+  formLastName.addEventListener('change', () => {
+    if (caractereVerif.test(formLastName.value)) {
+      document.querySelector('#lastNameErrorMsg').innerHTML = ' ';
     } else {
-      alert(`votre nom ${formLastName} n'est pas valid.`);
+      document.querySelector('#lastNameErrorMsg').innerHTML = `votre nom ${formLastName.value} n'est pas valid.`;
     }
   });
 
   // addresse
-  document.querySelector('#address').addEventListener('change', () => {
-    if (adresseVerif.test(formAddress)) {
-      formAddress.innerHTML = ' '
+  formAddress.addEventListener('change', () => {
+    if (adresseVerif.test(formAddress.value)) {
+      document.querySelector('#addressErrorMsg').innerHTML = ''
     } else {
-      alert(`votre adresse ${formAddress} n'est pas valid.`);
+      document.querySelector('#addressErrorMsg').innerHTML = `votre adresse ${formAddress.value} n'est pas valid.`;
     }
   });
 
   // ville
-  document.querySelector('#city').addEventListener('change', () => {
-    if (caractereVerif.test(formCity)) {
-      formCity.innerHTML = ' '
+  formCity.addEventListener('change', () => {
+    if (caractereVerif.test(formCity.value)) {
+      document.querySelector('#cityErrorMsg').innerHTML = ''
     } else {
-      alert(`votre ville ${formCity} n'est pas valid.`);
+      document.querySelector('#cityErrorMsg').innerHTML = `votre ville ${formCity.value} n'est pas valid.`;
     }
   });
 
   //Email
-  document.querySelector('#email').addEventListener('change', () => {
-    if (emailCharVerif.test(formEmail)) {
-      formEmail.innerHTML = ' '
+  formEmail.addEventListener('change', () => {
+    if (emailCharVerif.test(formEmail.value)) {
+      document.querySelector('#emailErrorMsg').innerHTML = ' '
     } else {
-      alert(`votre email ${formEmail} n'est pas valid.`);
+      document.querySelector('#emailErrorMsg').innerHTML = `votre email ${formEmail.value} n'est pas valid.`;
     }
   });
 }
