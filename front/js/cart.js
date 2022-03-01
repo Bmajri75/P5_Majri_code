@@ -13,8 +13,8 @@ const getFetchApi = () => {
         }
       })
       .then(data => {
-        nodeCart(data, i)
-
+        nodeCart(data, i);
+        deletButnFunction(i);
       })
       .catch(err => {
         console.log(`vous avez une Erreur !! ${err}`);
@@ -32,13 +32,14 @@ const totalQuantity = () => {
   // je recupere les donnée dans commandeArray
   for (let i = 0; i < localStorageReturn.length; i++) {
 
-    quantityTotalArray.push(localStorageReturn[i].quantity);
+    quantityTotalArray.push(parseInt(localStorageReturn[i].quantity));
 
   }
-
+  console.log(quantityTotalArray);
   const totalValue = quantityTotalArray.reduce(
     (pre, cur) => pre + cur,
   );
+
   return totalValue
 }
 
@@ -191,11 +192,29 @@ const nodeCart = (data, i) => {
   document.querySelector('#totalQuantity').innerHTML = `${totalQuantity()}`;
   document.querySelector('#totalPrice').innerHTML = `${totalPrice(data, i)}`;
 
+  addQuantityPanier(i)
+
+}
+
+const addQuantityPanier = (i) => {
+
+  // fonction jouter quantity a partir du panier 
+  const itemQuantityPannier = document.querySelectorAll('.itemQuantity');
+
+  itemQuantityPannier[i].addEventListener('change', (e) => {
+    e.preventDefault();
+    localStorageReturn[i].quantity = itemQuantityPannier[i].value;
+    console.log(localStorageReturn)
+    localStorage.setItem("commande", JSON.stringify(localStorageReturn)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
+    location.reload();
+  })
+}
 
 
+// btn supprimer.
+function deletButnFunction(i) {
 
   const deleteBtn = document.querySelectorAll(".deleteItem");
-
 
   deleteBtn[i].addEventListener('click', (e) => {
     e.preventDefault();
@@ -216,11 +235,8 @@ const nodeCart = (data, i) => {
       }
     }
   })
-
-
-
-
 }
+
 
 
 //creation du formulaire de verification 
@@ -239,7 +255,8 @@ const validityFormulaire = () => {
   const adresseVerif = /^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/;
 
   //Prenom
-  formFirstName.addEventListener('change', () => {
+  formFirstName.addEventListener('change', (e) => {
+    e.preventDefault()
     if (caractereVerif.test(formFirstName.value)) {
       document.querySelector('#firstNameErrorMsg').innerHTML = ' ';
     } else {
@@ -249,7 +266,8 @@ const validityFormulaire = () => {
 
 
   // nom 
-  formLastName.addEventListener('change', () => {
+  formLastName.addEventListener('change', (e) => {
+    e.preventDefault()
     if (caractereVerif.test(formLastName.value)) {
       document.querySelector('#lastNameErrorMsg').innerHTML = ' ';
     } else {
@@ -258,7 +276,8 @@ const validityFormulaire = () => {
   });
 
   // addresse
-  formAddress.addEventListener('change', () => {
+  formAddress.addEventListener('change', (e) => {
+    e.preventDefault()
     if (adresseVerif.test(formAddress.value)) {
       document.querySelector('#addressErrorMsg').innerHTML = ''
     } else {
@@ -267,7 +286,8 @@ const validityFormulaire = () => {
   });
 
   // ville
-  formCity.addEventListener('change', () => {
+  formCity.addEventListener('change', (e) => {
+    e.preventDefault()
     if (caractereVerif.test(formCity.value)) {
       document.querySelector('#cityErrorMsg').innerHTML = ''
     } else {
@@ -276,7 +296,8 @@ const validityFormulaire = () => {
   });
 
   //Email
-  formEmail.addEventListener('change', () => {
+  formEmail.addEventListener('change', (e) => {
+    e.preventDefault()
     if (emailCharVerif.test(formEmail.value)) {
       document.querySelector('#emailErrorMsg').innerHTML = ' '
     } else {
@@ -343,6 +364,12 @@ const sendCmd = () => {
 sendCmd();
 
 
+
+// pour les valeurs du panier
+
+// 1 - ecouter le changement 
+// 2- envoyer au localStorage
+// 3- recuperer le localstorage pour l'afficher
 
 
 
