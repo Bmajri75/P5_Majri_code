@@ -7,10 +7,11 @@ const creatNode = (data, i) => {
   //<img/> => img
   //<h3></h3> => baliseH3
   //<p></p> => baliseP
+
   // ici j'attache le a je lui rajoute le href ainsie que le lien.
   let baliseA = document.createElement('a');
   document.querySelector('.items').appendChild(baliseA);
-  baliseA.href = `./product.html?id=${data[i]._id}`
+  baliseA.href = `./product.html?id=${data[i]._id}`;
 
   // j'attache la balise <article> à la balise <a>
   let baliseArticle = document.createElement('article');
@@ -36,25 +37,31 @@ const creatNode = (data, i) => {
 }
 
 
-// je demande le retour de l'api avec fetch
-fetch('http://localhost:3000/api/products')
+const getApi = () => {
 
-  //celle ci me renvoie une promise j'appel then pour recuperer le resultat et verifier si celui ci est bien passé
-  .then(res => {
-    if (res.ok) {
-      return res.json() // si tout est ok j'ai un retour dans res que je convertie en format json ()
-    }
-  })// ce dernier me renvoie encore une promise j'utilise encore then pour les recuperer
-  .then(data => {
-    for (let i = 0; i < data.length; i++) {
-      // je boucle sur ce resultat en appel de ma fonction creat node
-      creatNode(data, i);
-    }
-  })
-  .catch(err => {
-    console.log(`vous avez une Erreur !! ${err}`);
-  })
+  // je demande le retour de l'api avec fetch
+  fetch('http://localhost:3000/api/products')
+
+    //celle ci me renvoie une promise j'appel then pour recuperer le resultat et verifier si celui ci est bien passé
+    .then(res => {
+      if (res.ok) {
+        return res.json() // si tout est ok j'ai un retour dans res que je convertie en format json ()
+      }
+    })// ce dernier me renvoie encore une promise j'utilise encore then pour les recuperer
+    .then(data => {
+      for (let i = 0; i < data.length; i++) {
+        // je boucle sur ce resultat en appel de ma fonction creat node
+        creatNode(data, i);
+      }
+    })
+    .catch(err => {
+      console.log(`vous avez une Erreur !! ${err}`);
+    })
+
+}
 
 
+// j'appel ma fonction qui appel elle meme la fonction creatNode()
+getApi();
 
 

@@ -16,6 +16,8 @@ const textProductPage = (data) => {
   document.querySelector('#price').textContent = (`${data.price}`);
   document.querySelector('#description').textContent = (`${data.description}`);
 }
+
+
 // je demande le retour de l'api avec fetch
 //celle ci me renvoie une promise j'appel then pour recuperer le resultat et verifier si celui ci est bien passé
 fetch(`http://localhost:3000/api/products/${articlId}`)
@@ -26,8 +28,8 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
   })// ce dernier me renvoie encore une promise j'utilise encore then pour les recuperer
   .then(data => {
     textProductPage(data)
-    // gestion des couleurs
 
+    // affichage des couleurs
     //je cree une variable qui sera un array avec [color1, color 2, color 3]
     let colorFromsApi = data.colors
     // je boucle sur la taille de chaque array avec comme incrementation
@@ -40,6 +42,7 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
     }
     document.querySelector('#addToCart').addEventListener('click', (e) => {
       e.preventDefault();
+
       // recupere les Values de la page Couleur et Quantiter
       const valueColors = document.querySelector("#colors").value;
       const valueQuantity = document.querySelector("#quantity").value;

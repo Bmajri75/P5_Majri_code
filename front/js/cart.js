@@ -1,9 +1,9 @@
 // je recupere les donnes du LocalStorage
 let localStorageReturn = JSON.parse(localStorage.getItem("commande"));
 
-
+// fonction qui appel fetch sur l'Id des produits envoyé au localStorag
+// je boucle afin d'avoir tout les id
 const getFetchApi = () => {
-
   for (let i = 0; i < localStorageReturn.length; i++) {
 
     fetch(`http://localhost:3000/api/products/${localStorageReturn[i].id}`)
@@ -198,15 +198,15 @@ const nodeCart = (data, i) => {
 
 const addQuantityPanier = (i) => {
 
-  // fonction jouter quantity a partir du panier 
+  // fonction ajouter quantity a partir du panier 
   const itemQuantityPannier = document.querySelectorAll('.itemQuantity');
 
   itemQuantityPannier[i].addEventListener('change', (e) => {
     e.preventDefault();
+    // je modifie la variable quantiter de localstorage par la valeur de la quantity afficher au change
     localStorageReturn[i].quantity = itemQuantityPannier[i].value;
-    console.log(localStorageReturn)
     localStorage.setItem("commande", JSON.stringify(localStorageReturn)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
-    location.reload();
+    location.reload();// je recharge la page pour afficher toutes les valeurs
   })
 }
 
@@ -361,16 +361,9 @@ const sendCmd = () => {
   })
 
 }
+
+// appel de la fonction qui envoie la commande
 sendCmd();
-
-
-
-// pour les valeurs du panier
-
-// 1 - ecouter le changement 
-// 2- envoyer au localStorage
-// 3- recuperer le localstorage pour l'afficher
-
 
 
 
