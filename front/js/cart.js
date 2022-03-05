@@ -14,7 +14,6 @@ const getFetchApi = () => {
       })
       .then(data => {
         nodeCart(data, i);
-        deletButnFunction(i);
       })
       .catch(err => {
         console.log(`vous avez une Erreur !! ${err}`);
@@ -35,7 +34,6 @@ const totalQuantity = () => {
     quantityTotalArray.push(parseInt(localStorageReturn[i].quantity));
 
   }
-  console.log(quantityTotalArray);
   const totalValue = quantityTotalArray.reduce(
     (pre, cur) => pre + cur,
   );
@@ -192,50 +190,60 @@ const nodeCart = (data, i) => {
   document.querySelector('#totalQuantity').innerHTML = `${totalQuantity()}`;
   document.querySelector('#totalPrice').innerHTML = `${totalPrice(data, i)}`;
 
+  deletButnFunction(i)
   addQuantityPanier(i)
-
 }
 
 const addQuantityPanier = (i) => {
 
   // fonction ajouter quantity a partir du panier 
   const itemQuantityPannier = document.querySelectorAll('.itemQuantity');
+  //console.log(itemQuantityPannier).value
 
-  itemQuantityPannier[i].addEventListener('change', (e) => {
-    e.preventDefault();
-    // je modifie la variable quantiter de localstorage par la valeur de la quantity afficher au change
-    localStorageReturn[i].quantity = itemQuantityPannier[i].value;
-    localStorage.setItem("commande", JSON.stringify(localStorageReturn)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
-    location.reload();// je recharge la page pour afficher toutes les valeurs
-  })
+  for (let j = 0; j < itemQuantityPannier.length; j++) {
+
+
+    itemQuantityPannier[j].addEventListener('change', (e) => {
+      e.preventDefault();
+      // je modifie la variable quantiter de localstorage par la valeur de la quantity afficher au change
+      localStorageReturn[i].quantity = itemQuantityPannier[j].value;
+      localStorage.setItem("commande", JSON.stringify(localStorageReturn)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
+      location.reload();// je recharge la page pour afficher toutes les valeurs
+    })
+  }
 }
-
+addQuantityPanier()
 
 // btn supprimer.
-function deletButnFunction(i) {
+const deletButnFunction = (i) => {
 
   const deleteBtn = document.querySelectorAll(".deleteItem");
+  for (let k = 0; k < deleteBtn.length; k++) {
 
-  deleteBtn[i].addEventListener('click', (e) => {
-    e.preventDefault();
+    deleteBtn[k].addEventListener('click', (e) => {
+      e.preventDefault();
 
-    // je filtre sur le tableau recuperer par mes donee du localStorage.
-    // 1 -- je cree un nouveau tableau qui renvoie toutes les commandes SAUF celle qui a le meme id de la commande du bouton Supprimer et  aussi la meme couleur pour eviter de suprimer les meme produit (car ils on le meme Id)
-    localStorageReturn = localStorageReturn.filter((item) => item.id !== localStorageReturn[i].id || item.color !== localStorageReturn[i].color);
-    if (localStorageReturn.length > 0) {
-      localStorage.setItem("commande", JSON.stringify(localStorageReturn)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
-      alert(` Votre commande est bien enlevé du panier `); // j'allerte mon clients 
-      location.reload(); // je recharge la page avec le nouveau tableau
-    } else if (localStorageReturn.length = 1) {
-      const choix = confirm(` Votre Votre panier va être vide `); // j'allerte mon clients 
-      if (choix) {
-        localStorage.clear();
+      // je filtre sur le tableau recuperer par mes donee du localStorage.
+      // 1 -- je cree un nouveau tableau qui renvoie toutes les commandes SAUF celle qui a le meme id de la commande du bouton Supprimer et  aussi la meme couleur pour eviter de suprimer les meme produit (car ils on le meme Id)
+      localStorageReturn = localStorageReturn.filter((item) => item.id !== localStorageReturn[i].id || item.color !== localStorageReturn[i].color);
+      if (localStorageReturn.length > 0) {
+        localStorage.setItem("commande", JSON.stringify(localStorageReturn)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
         alert(` Votre commande est bien enlevé du panier `); // j'allerte mon clients 
         location.reload(); // je recharge la page avec le nouveau tableau
+      } else if (localStorageReturn.length = 1) {
+        const choix = confirm(` Votre Votre panier va être vide `); // j'allerte mon clients 
+        if (choix) {
+          localStorage.clear();
+          alert(` Votre commande est bien enlevé du panier `); // j'allerte mon clients 
+          location.reload(); // je recharge la page avec le nouveau tableau
+        }
       }
-    }
-  })
+    })
+  }
 }
+
+deletButnFunction();
+
 
 
 
@@ -305,7 +313,6 @@ const validityFormulaire = () => {
     }
   });
 }
-
 validityFormulaire();
 
 // j'envoie la commande au backend
@@ -347,6 +354,7 @@ const sendCmd = () => {
       },
     };
 
+    // fetch pour envoyer au backend
     fetch("http://localhost:3000/api/products/order", options)
       .then((response) => response.json())
       .then((data) => {

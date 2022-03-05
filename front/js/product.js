@@ -1,4 +1,4 @@
-// je cree une variable dans la quel je recupere un resultat de l'instance URL
+// je cree une variable dans la quel je recupere un resultat de  URL en locurance ici je prend l'ID de la barre
 // (l'interface  URL est un objet qui fournit des methode Statique pour cree des URL )
 let articlId = new URL(location.href).searchParams.get('id');
 
@@ -27,7 +27,6 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
     }
   })// ce dernier me renvoie encore une promise j'utilise encore then pour les recuperer
   .then(data => {
-    textProductPage(data)
 
     // affichage des couleurs
     //je cree une variable qui sera un array avec [color1, color 2, color 3]
