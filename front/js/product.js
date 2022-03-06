@@ -17,7 +17,6 @@ const textProductPage = (data) => {
   document.querySelector('#description').textContent = (`${data.description}`);
 }
 
-
 // je demande le retour de l'api avec fetch
 //celle ci me renvoie une promise j'appel then pour recuperer le resultat et verifier si celui ci est bien passé
 fetch(`http://localhost:3000/api/products/${articlId}`)
@@ -27,6 +26,9 @@ fetch(`http://localhost:3000/api/products/${articlId}`)
     }
   })// ce dernier me renvoie encore une promise j'utilise encore then pour les recuperer
   .then(data => {
+    // appel de la function qui cree les node de la page 
+    textProductPage(data)
+
 
     // affichage des couleurs
     //je cree une variable qui sera un array avec [color1, color 2, color 3]

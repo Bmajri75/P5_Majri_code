@@ -20,7 +20,7 @@ const getFetchApi = () => {
       })
   }
 }
-getFetchApi();
+
 
 
 // calcule du total Quantity 
@@ -190,10 +190,12 @@ const nodeCart = (data, i) => {
   document.querySelector('#totalQuantity').innerHTML = `${totalQuantity()}`;
   document.querySelector('#totalPrice').innerHTML = `${totalPrice(data, i)}`;
 
-  deletButnFunction(i)
-  addQuantityPanier(i)
+  deletButnFunction(i);
+  addQuantityPanier(i);
+
 }
 
+// fonction qui ajoute de la quantiter a partir du panier
 const addQuantityPanier = (i) => {
 
   // fonction ajouter quantity a partir du panier 
@@ -201,7 +203,6 @@ const addQuantityPanier = (i) => {
   //console.log(itemQuantityPannier).value
 
   for (let j = 0; j < itemQuantityPannier.length; j++) {
-
 
     itemQuantityPannier[j].addEventListener('change', (e) => {
       e.preventDefault();
@@ -212,9 +213,8 @@ const addQuantityPanier = (i) => {
     })
   }
 }
-addQuantityPanier()
 
-// btn supprimer.
+// btn supprimer du panier
 const deletButnFunction = (i) => {
 
   const deleteBtn = document.querySelectorAll(".deleteItem");
@@ -241,8 +241,6 @@ const deletButnFunction = (i) => {
     })
   }
 }
-
-deletButnFunction();
 
 
 
@@ -372,6 +370,9 @@ const sendCmd = () => {
 
 // appel de la fonction qui envoie la commande
 sendCmd();
+
+getFetchApi();
+
 
 
 
