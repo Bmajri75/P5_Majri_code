@@ -10,7 +10,7 @@ const app = {
   // (l'interface  URL est un objet qui fournit des methode Statique pour cree des URL )
   articlId: new URL(location.href).searchParams.get('id'),
 
-  // fonction init qui appel toutes les fonction demarage
+  // methode init qui appel toutes les fonction demarage
   init: () => {
     app.fetchFonction();
   },
