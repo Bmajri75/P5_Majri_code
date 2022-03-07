@@ -27,7 +27,8 @@ const app = {
     // balise img 
     let img = document.createElement('img');
     baliseArticle.appendChild(img);
-    img.src = data[i].imageUrl
+    img.src = data[i].imageUrl;
+    img.alt = data[i].altTxt;
 
     // balise h3 
     let baliseH3 = document.createElement('h3');
