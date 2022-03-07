@@ -1,7 +1,15 @@
 const app = {
+  /**
+   * textProductPage();
+   * addColorToPage();
+   * fetchFonction();
+   * envoyerPannier();
+   */
+
   // je cree une variable dans la quel je recupere un resultat de  URL en locurance ici je prend l'ID de la barre
   // (l'interface  URL est un objet qui fournit des methode Statique pour cree des URL )
   articlId: new URL(location.href).searchParams.get('id'),
+
   // fonction init qui appel toutes les fonction demarage
   init: () => {
     app.fetchFonction();
@@ -21,6 +29,28 @@ const app = {
     document.querySelector('#title').textContent = (`${data.name}`);
     document.querySelector('#price').textContent = (`${data.price}`);
     document.querySelector('#description').textContent = (`${data.description}`);
+
+    // j'appel la creation des couleurs 
+    app.addColorToPage(data);
+
+    // j'appel la creation du btn envoyer
+    app.envoyerPannier(data);
+
+  },
+
+  // ajout des colors sur le dom
+  addColorToPage: (data) => {
+    // affichage des couleurs
+    //je cree une variable qui sera un array avec [color1, color 2, color 3]
+    let colorFromsApi = data.colors
+    // je boucle sur la taille de chaque array avec comme incrementation
+    // - option qui sera l'enfants de l'ID colors
+    for (let i = 0; i < colorFromsApi.length; i++) {
+      let option = document.createElement("option")
+      document.querySelector('#colors').appendChild(option)
+      option.value = colorFromsApi[i]; // une value
+      option.text = colorFromsApi[i]; // et un texte qui reprendre l'array cree plus haut
+    }
   },
 
   // fonction fetch appel d'API
@@ -35,89 +65,80 @@ const app = {
       })// ce dernier me renvoie encore une promise j'utilise encore then pour les recuperer
       .then(data => {
         // appel de la function qui cree les node de la page 
-        app.textProductPage(data)
-
-
-        // affichage des couleurs
-        //je cree une variable qui sera un array avec [color1, color 2, color 3]
-        let colorFromsApi = data.colors
-        // je boucle sur la taille de chaque array avec comme incrementation
-        // - option qui sera l'enfants de l'ID colors
-        for (let i = 0; i < colorFromsApi.length; i++) {
-          let option = document.createElement("option")
-          document.querySelector('#colors').appendChild(option)
-          option.value = colorFromsApi[i]; // une value
-          option.text = colorFromsApi[i]; // et un texte qui reprendre l'array cree plus haut
-        }
-        document.querySelector('#addToCart').addEventListener('click', (e) => {
-          e.preventDefault();
-
-          // recupere les Values de la page Couleur et Quantiter
-          const valueColors = document.querySelector("#colors").value;
-          const valueQuantity = document.querySelector("#quantity").value;
-
-          // je fait une initialisation du localStorage 
-          let localStorageReturn = []
-          localStorageReturn = JSON.parse(localStorage.getItem("commande"));
-          // je cree une premiere condition pour verifier qu'il y'a bien une valeur a la quantiter
-          if (valueQuantity > 0 && valueQuantity != 0 && valueQuantity <= 100) {
-            // je cree mon objet qui sera envoyer au Local storage
-            const productCommande = {
-              id: app.articlId,
-              name: data.name,
-              image: data.imageUrl,
-              color: valueColors,
-              quantity: Number(valueQuantity),
-              description: data.description,
-            }
-
-            // si je localstorage est null donc vide je rentre dans le IF
-            if (localStorageReturn == null) {
-
-              let localStorageReturn = [];
-              localStorageReturn.push(productCommande); // j'evoie la commande dans le tableau
-              localStorage.setItem("commande", JSON.stringify(localStorageReturn)); //j'envoie au local storage
-              alert(` votre produit : ${productCommande.name} quantiter : ${productCommande.quantity} est dans votre panier `);
-              // sinon Si le local storage est different de vide (donc plein)
-            } else if (localStorageReturn != null) {
-
-              // je boucle sur la taille des element sur le local storage pour modifier celui ci 
-              for (let i = 0; i < localStorageReturn.length; i++) {
-                // si les produit que j'envoie on le meme id et la meme couleur 
-                if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i].color == productCommande.color) {
-                  // je renvoie uniquement la quantiter qu'il y'a dans ma commande au local storage
-                  return (
-                    localStorageReturn[i].quantity += productCommande.quantity,
-                    localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
-                    localStorageReturn = JSON.parse(localStorage.getItem('commande'))
-                  ),
-                    alert(` Ajout de ${productCommande.quantity} à votre Panier `)
-                }
-
-              }
-              // je refair une boucle pour verifier une autre condition 
-              for (let i = 0; i < localStorageReturn.length; i++) {
-                // si le local storage a la meme id et une couleur differente je rentre dans cette condition 
-                if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i].color != productCommande.color || localStorageReturn[i].id != productCommande.id) {
-                  // je rajoute la commande entiere dans mon local storage
-                  return (
-                    localStorageReturn.push(productCommande),
-                    localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
-                    localStorageReturn = JSON.parse(localStorage.getItem('commande')),
-                    alert(` Ajout de : ${productCommande.name} couleur : ${productCommande.color} à votre Panier `)
-                  )
-
-                }
-              }
-
-            }
-          }
-        })
+        app.textProductPage(data);
       })
       .catch(err => {
         console.log(`vous avez une Erreur !! ${err}`);
       })
-  }
+  },
+
+  envoyerPannier: (data) => {
+    document.querySelector('#addToCart').addEventListener('click', (e) => {
+      e.preventDefault();
+
+      // recupere les Values de la page Couleur et Quantiter
+      const valueColors = document.querySelector("#colors").value;
+      const valueQuantity = document.querySelector("#quantity").value;
+
+      // je fait une initialisation du localStorage 
+      let localStorageReturn = []
+      localStorageReturn = JSON.parse(localStorage.getItem("commande"));
+
+      // je cree une premiere condition pour verifier qu'il y'a bien une valeur a la quantiter
+      if (valueQuantity > 0 && valueQuantity != 0 && valueQuantity <= 100) {
+        // je cree mon objet qui sera envoyer au Local storage
+        const productCommande = {
+          id: app.articlId,
+          name: data.name,
+          image: data.imageUrl,
+          color: valueColors,
+          quantity: Number(valueQuantity),
+          description: data.description,
+        }
+
+        // si je localstorage est null donc vide je rentre dans le IF
+        if (localStorageReturn == null) {
+
+          let localStorageReturn = [];
+          localStorageReturn.push(productCommande); // j'evoie la commande dans le tableau
+          localStorage.setItem("commande", JSON.stringify(localStorageReturn)); //j'envoie au local storage
+          alert(` votre produit : ${productCommande.name} quantiter : ${productCommande.quantity} est dans votre panier `);
+          // sinon Si le local storage est different de vide (donc plein)
+        } else if (localStorageReturn != null) {
+
+          // je boucle sur la taille des element sur le local storage pour modifier celui ci 
+          for (let i = 0; i < localStorageReturn.length; i++) {
+            // si les produit que j'envoie on le meme id et la meme couleur 
+            if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i].color == productCommande.color) {
+              // je renvoie uniquement la quantiter qu'il y'a dans ma commande au local storage
+              return (
+                localStorageReturn[i].quantity += productCommande.quantity,
+                localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
+                localStorageReturn = JSON.parse(localStorage.getItem('commande'))
+              ),
+                alert(` Ajout de ${productCommande.quantity} à votre Panier `)
+            }
+
+          }
+          // je refair une boucle pour verifier une autre condition 
+          for (let i = 0; i < localStorageReturn.length; i++) {
+            // si le local storage a la meme id et une couleur differente je rentre dans cette condition 
+            if (localStorageReturn[i].id == productCommande.id && localStorageReturn[i].color != productCommande.color || localStorageReturn[i].id != productCommande.id) {
+              // je rajoute la commande entiere dans mon local storage
+              return (
+                localStorageReturn.push(productCommande),
+                localStorage.setItem("commande", JSON.stringify(localStorageReturn)),
+                localStorageReturn = JSON.parse(localStorage.getItem('commande')),
+                alert(` Ajout de : ${productCommande.name} couleur : ${productCommande.color} à votre Panier `)
+              )
+
+            }
+          }
+
+        }
+      }
+    });
+  },
 
 }
 
