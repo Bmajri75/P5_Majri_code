@@ -62,6 +62,8 @@ const app = {
       })
       .catch(err => {
         console.log(`vous avez une Erreur !! ${err}`);
+        alert(`Désolé, une erreur est survenur, Merci de revenir plus tard`);
+
       })
 
   }

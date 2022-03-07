@@ -1,9 +1,9 @@
 
 // une simple fonction pour afficher le numero de confirmation
 const confirmationMsg = () => {
-  valueOrderID = localStorage.getItem("numeroCmd");
   const baliseOrderID = document.querySelector('#orderId');
-  baliseOrderID.innerHTML = `${valueOrderID} `
+  const orderId = new URL(location.href).searchParams.get('orderId');
+  baliseOrderID.innerHTML = `${orderId} `
   localStorage.clear();
   // je vide completement le local storage apres avoir tout effectuer
 }

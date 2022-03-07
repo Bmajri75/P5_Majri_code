@@ -32,6 +32,7 @@ const app = {
           })
           .catch(err => {
             console.log(`vous avez une Erreur !! ${err}`);
+            //      alert(`Désolé, une erreur est survenur, Merci de revenir plus tard`);
           })
       }
     }
@@ -171,7 +172,7 @@ const app = {
     // ========
 
     // TOTAL 
-    document.querySelector('#totalQuantity').innerHTML = `${app.totalQuantity()}`;
+    document.querySelector('#totalQuantity').innerHTML = `${app.totalQuantity(i)}`;
     document.querySelector('#totalPrice').innerHTML = `${app.totalPrice(data, i)}`;
 
     app.deletButnFunction(i);
@@ -179,23 +180,24 @@ const app = {
     // validation du formulaire
     app.validityFormulaire();
     // appel de la fonction qui envoie la commande
-    app.sendCmd();
 
-
+    if (app.validityFormulaire() && app.totalQuantity(i) > 0) {
+      app.validityFormulaire();
+    }
   },
 
+  // variable Initialisees 
+  quantityTotalArray: [],
+
   // calcule du total Quantity 
-  totalQuantity: () => {
-    const quantityTotalArray = [];
-    // variable Initialisees 
+  totalQuantity: (i) => {
     // je boucle sur le tableau du localStorage
-    // je recupere les donnée dans commandeArray
-    for (let i = 0; i < app.localStorageReturn.length; i++) {
+    // for (let i = 0; i < app.localStorageReturn.length; i++) {
 
-      quantityTotalArray.push(parseInt(app.localStorageReturn[i].quantity));
+    app.quantityTotalArray.push(parseInt(app.localStorageReturn[i].quantity));
 
-    }
-    const totalValue = quantityTotalArray.reduce(
+    //  }
+    const totalValue = app.quantityTotalArray.reduce(
       (pre, cur) => pre + cur,
     );
 
@@ -207,29 +209,37 @@ const app = {
   // calcul du prix total de la commande 
   totalPrice: (data, i) => {
 
+    // ajoute prix x quantiter dans l'array prixTotalArray
     app.prixTotalArray.push(data.price * app.localStorageReturn[i].quantity);
+
+    // calcule de tout ce qu'il y'a dans l'array
     const totalsolde = app.prixTotalArray.reduce(
       (pre, cur) => pre + cur,
     );
     return totalsolde
   },
 
-  addQuantityPanier: (i) => {
 
+  addQuantityPanier: (i) => {
     // fonction ajouter quantity a partir du panier 
     const itemQuantityPannier = document.querySelectorAll('.itemQuantity');
     //console.log(itemQuantityPannier).value
 
-    for (let j = 0; j < itemQuantityPannier.length; j++) {
 
-      itemQuantityPannier[j].addEventListener('change', (e) => {
-        e.preventDefault();
+    itemQuantityPannier[i].addEventListener('change', (e) => {
+      e.preventDefault();
+
+      if (itemQuantityPannier[i].value <= 100 && itemQuantityPannier[i].value >= 1) {
+
         // je modifie la variable quantiter de localstorage par la valeur de la quantity afficher au change
-        app.localStorageReturn[i].quantity = itemQuantityPannier[j].value;
+        app.localStorageReturn[i].quantity = itemQuantityPannier[i].value;
         localStorage.setItem("commande", JSON.stringify(app.localStorageReturn)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
         location.reload();// je recharge la page pour afficher toutes les valeurs
-      })
-    }
+      } else {
+        itemQuantityPannier[i].value = 1;
+      }
+    })
+
   },
 
   // btn supprimer du panier
@@ -262,6 +272,7 @@ const app = {
 
   //creation du formulaire de verification 
   validityFormulaire: () => {
+
     // selection de la balise formulaire 
     const formFirstName = document.querySelector('#firstName');
     const formLastName = document.querySelector('#lastName');
@@ -281,7 +292,7 @@ const app = {
       if (caractereVerif.test(formFirstName.value)) {
         document.querySelector('#firstNameErrorMsg').innerHTML = ' ';
       } else {
-        document.querySelector('#firstNameErrorMsg').innerHTML = `votre prenon ${formFirstName.value} n'est pas valid.`;
+        document.querySelector('#firstNameErrorMsg').innerHTML = `un prenom comporte uniquement des lettres.`;
       }
     });
 
@@ -292,7 +303,7 @@ const app = {
       if (caractereVerif.test(formLastName.value)) {
         document.querySelector('#lastNameErrorMsg').innerHTML = ' ';
       } else {
-        document.querySelector('#lastNameErrorMsg').innerHTML = `votre nom ${formLastName.value} n'est pas valid.`;
+        document.querySelector('#lastNameErrorMsg').innerHTML = `le nom dois co;porter uniquement des lettres.`;
       }
     });
 
@@ -302,7 +313,7 @@ const app = {
       if (adresseVerif.test(formAddress.value)) {
         document.querySelector('#addressErrorMsg').innerHTML = ''
       } else {
-        document.querySelector('#addressErrorMsg').innerHTML = `votre adresse ${formAddress.value} n'est pas valid.`;
+        document.querySelector('#addressErrorMsg').innerHTML = `veuillez entrer une adresse avec un numero et une Rue.`;
       }
     });
 
@@ -312,7 +323,7 @@ const app = {
       if (caractereVerif.test(formCity.value)) {
         document.querySelector('#cityErrorMsg').innerHTML = ''
       } else {
-        document.querySelector('#cityErrorMsg').innerHTML = `votre ville ${formCity.value} n'est pas valid.`;
+        document.querySelector('#cityErrorMsg').innerHTML = `veuillez entrer un Ville.`;
       }
     });
 
@@ -322,13 +333,18 @@ const app = {
       if (emailCharVerif.test(formEmail.value)) {
         document.querySelector('#emailErrorMsg').innerHTML = ' '
       } else {
-        document.querySelector('#emailErrorMsg').innerHTML = `votre email ${formEmail.value} n'est pas valid.`;
+        document.querySelector('#emailErrorMsg').innerHTML = `un email valide c'est unnom@monfournisseur.com.`;
       }
+
+
     });
+    app.sendCmd();
   },
 
   // j'envoie la commande au backend
   sendCmd: () => {
+
+
     // selection de la balise order 
     const btnEnvoyer = document.querySelector('#order');
 
@@ -371,16 +387,18 @@ const app = {
         .then((response) => response.json())
         .then((data) => {
           // je recupere un objet avec le resumer de ma commande les ID et surtout le numero de confirmation 
-          localStorage.setItem('numeroCmd', data.orderId);// je demande a envoyer directement au Local Storage le Id de confirmation avec la key numeroCMD 
-          document.location.href = '../html/confirmation.html'// j'indique la page qui dois apparaitre 
+          console.log(data.orderId);// je demande a envoyer directement au Local Storage le Id de confirmation avec la key numeroCMD 
+          document.location.href = `../html/confirmation.html?orderId=${data.orderId}`// j'indique la page qui dois apparaitre 
 
         })
         .catch((err) => {
           console.log(`vous avez une erreur :  ${err}`)
+          alert(`Désolé, une erreur est survenur, Merci de revenir plus tard`)
         })
     })
 
   }
+
 }
 
 
