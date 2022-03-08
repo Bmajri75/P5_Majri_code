@@ -1,72 +1,93 @@
+// Liste des Export
+
+
+/**=============================Liste des methodes et parametres de cette app ========================
+ * arrayGetFetch: [],
+ *  app.getFetchCanap();
+    app.creatNode();
+ * 
+ * ============================Fonctionnement de l'app====================
+ * 
+ * 1 - cette app contien une methode init qui est appeler au chargement de la page.
+ * 2 - elle contien 2 methodes asynchrone
+ * 3 - app.getFetchCanap() ====> elle envoie une requette GET pour recuperer les donnés a partir du Backend.
+ * 4 - app.creatNode() ==> est une methode qui cree les noeuds de la page et inject les data recuperer par l'API
+ * app.arrayGetFetch ==> un array qui contien le retour de la methode Fetch, en locurence les données de l'API
+ */
 const app = {
-  // creatNode();
-  //getApi();
 
-  // fonction init qui est appeler au demarage
+  arrayGetFetch: [],
+  // fonction executé au chargement de la page.
   init: () => {
-    // j'appel ma fonction qui appel elle meme la fonction creatNode()
-    app.getApi();
+    app.getFetchCanap();
+    app.creatNode();
   },
-  // je cree une fonction avec 2 parametre qui cree les noeux dans le HTML et qui reprendra les donnée de l'api pour injecter les datas
-  creatNode: (data, i) => {
-    // <a></a> => baliseA
-    // <article></article> => baliseArticle
-    //<img/> => img
-    //<h3></h3> => baliseH3
-    //<p></p> => baliseP
 
-    // ici j'attache le a je lui rajoute le href ainsie que le lien.
-    let baliseA = document.createElement('a');
-    document.querySelector('.items').appendChild(baliseA);
-    baliseA.href = `./product.html?id=${data[i]._id}`;
-
-    // j'attache la balise <article> à la balise <a>
-    let baliseArticle = document.createElement('article');
-    baliseA.appendChild(baliseArticle);
-
-    // balise img 
-    let img = document.createElement('img');
-    baliseArticle.appendChild(img);
-    img.src = data[i].imageUrl;
-    img.alt = data[i].altTxt;
-
-    // balise h3 
-    let baliseH3 = document.createElement('h3');
-    baliseArticle.appendChild(baliseH3);
-    baliseH3.classList.add("productName");
-    baliseH3.innerHTML = data[i].name;
-
-    // balise p
-    let baliseP = document.createElement('p');
-    baliseArticle.appendChild(baliseP);
-    baliseP.classList.add("productDescription");
-    baliseP.innerHTML = data[i].description;
-
-  },
-  getApi: () => {
-
-    // je demande le retour de l'api avec fetch
-    fetch('http://localhost:3000/api/products')
-
-      //celle ci me renvoie une promise j'appel then pour recuperer le resultat et verifier si celui ci est bien passé
-      .then(res => {
-        if (res.ok) {
-          return res.json() // si tout est ok j'ai un retour dans res que je convertie en format json ()
-        }
-      })// ce dernier me renvoie encore une promise j'utilise encore then pour les recuperer
-      .then(data => {
-        for (let i = 0; i < data.length; i++) {
-          // je boucle sur ce resultat en appel de ma fonction creat node
-          app.creatNode(data, i);
-        }
+  // envoie un GET a l'API et recupere les data dans l'array arrayGetFetch[], methode asymchrone
+  getFetchCanap: async () => {
+    await fetch('http://localhost:3000/api/products')
+      .then((res) => res.json())
+      .then((data) => {
+        app.arrayGetFetch = data;
       })
       .catch(err => {
         console.log(`vous avez une Erreur !! ${err}`);
         alert(`Désolé, une erreur est survenur, Merci de revenir plus tard`);
-
       })
+  },
 
-  }
+  //cree les neuds pour le visuel de la page avec des data qui provienne de arrayGetFetch[];
+  //methode asynchrone
+  creatNode: async () => {
+
+    await app.getFetchCanap();// j'attend que la methode getFetchCanap soit executée pour aller a la suite.
+
+    // je boucle sur la longueure de mon array pour cree autant d'element que le tableau dispose
+    for (let i = 0; i < app.arrayGetFetch.length; i++) {
+      /**
+       * crée la balise <a></a>
+       * je l'attache a la class items et j'y ajoute le href avec les donee de la data
+       */
+      const baliseA = document.createElement('a');
+      document.querySelector('.items').appendChild(baliseA);
+      baliseA.href = `./product.html?id=${app.arrayGetFetch[i]._id}`;
+
+      /**
+      * cree la balise <article></article>
+      * je l'attache a la balise <a></a>
+      */
+      const baliseArticle = document.createElement('article');
+      baliseA.appendChild(baliseArticle);
+
+      /**
+      * cree element <img> je l'attache a la balise article et je rajoute 2 attribut (src et alt) avec les data qui vons avec 
+      */
+      const img = document.createElement('img');
+      baliseArticle.appendChild(img);
+      img.src = app.arrayGetFetch[i].imageUrl;
+      img.alt = app.arrayGetFetch[i].altTxt;
+
+      /**
+      * cree <h3></h3>
+      * je l'attache a <article></article> ajoute la class productName et je rajoute le texte pris dans la data
+      */
+      const baliseH3 = document.createElement('h3');
+      baliseArticle.appendChild(baliseH3);
+      baliseH3.classList.add("productName");
+      baliseH3.innerHTML = app.arrayGetFetch[i].name;
+
+      /**
+       * cree balise <p></p>
+       * je l'attache a Article, ajoute class productDescription
+       * ajoute le texte pris dans la data description
+       */
+      const baliseP = document.createElement('p');
+      baliseArticle.appendChild(baliseP);
+      baliseP.classList.add("productDescription");
+      baliseP.innerHTML = app.arrayGetFetch[i].description;
+    }
+  },
 };
 
+// j'ecoute un event du chargement du dom et j'execute app.init
 document.addEventListener('DOMContentLoaded', app.init);

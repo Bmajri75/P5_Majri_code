@@ -1,5 +1,18 @@
+/**=============================Liste des methodes et parametres de cette app ========================
+ * arrayGetFetch: [],
+ *  app.getFetchCanap();
+    app.creatNode();
+ * 
+ * ============================Fonctionnement de l'app====================
+ * 
+ * 1 - cette app contien une methode init qui est appeler au chargement de la page.
+ * 2 - elle contien 2 methodes asynchrone
+ * 3 - app.getFetchCanap() ====> elle envoie une requette GET pour recuperer les donnés a partir du Backend.
+ * 4 - app.creatNode() ==> est une methode qui cree les noeuds de la page et inject les data recuperer par l'API
+ * app.arrayGetFetch ==> un array qui contien le retour de la methode Fetch, en locurence les données de l'API
+ */
 const app = {
-  // app.localStorageReturn;
+  // app.localStorageCommande;
   //getFetchApi();
   //nodeCart();
   //totalQuantity();
@@ -9,7 +22,7 @@ const app = {
 
   // je recupere les donnes du LocalStorage
 
-  localStorageReturn: JSON.parse(localStorage.getItem("commande")),
+  localStorageCommande: JSON.parse(localStorage.getItem("commande")),
 
 
   init: () => {
@@ -18,10 +31,10 @@ const app = {
   },
 
   getFetchApi: () => {
-    if (app.localStorageReturn !== null) {
-      for (let i = 0; i < app.localStorageReturn.length; i++) {
+    if (app.localStorageCommande !== null) {
+      for (let i = 0; i < app.localStorageCommande.length; i++) {
 
-        fetch(`http://localhost:3000/api/products/${app.localStorageReturn[i].id}`)
+        fetch(`http://localhost:3000/api/products/${app.localStorageCommande[i].id}`)
           .then(res => {
             if (res.ok) {
               return res.json() // si tout est ok j'ai un retour que je convertie en format json ()
@@ -51,8 +64,8 @@ const app = {
 
     // je donne les valeurs de ms attributs
     classCartItem.value = "cart__item";
-    dataId.value = `${app.localStorageReturn[i].id}`;
-    dataColor.value = `${app.localStorageReturn[i].color}`;
+    dataId.value = `${app.localStorageCommande[i].id}`;
+    dataColor.value = `${app.localStorageCommande[i].color}`;
 
     // je place mes attribut a mes elements
     articleElem.setAttributeNode(classCartItem);
@@ -72,8 +85,8 @@ const app = {
     const img = document.createElement('img');
     const src = document.createAttribute('src');
     const alt = document.createAttribute('alt');
-    src.value = `${app.localStorageReturn[i].image}`;
-    alt.value = `${app.localStorageReturn[i].description}`;
+    src.value = `${app.localStorageCommande[i].image}`;
+    alt.value = `${app.localStorageCommande[i].description}`;
     img.setAttributeNode(src);
     img.setAttributeNode(alt);
 
@@ -101,8 +114,8 @@ const app = {
     const h2Name = document.createElement('h2');
     const paragrapheColor = document.createElement('p');
     const paragraphePrice = document.createElement('p');
-    h2Name.innerHTML = `${app.localStorageReturn[i].name}`;
-    paragrapheColor.innerText = ` ${app.localStorageReturn[i].color}`;
+    h2Name.innerHTML = `${app.localStorageCommande[i].name}`;
+    paragrapheColor.innerText = ` ${app.localStorageCommande[i].color}`;
     paragraphePrice.innerText = `${data.price} €`;
 
     // ============
@@ -135,7 +148,7 @@ const app = {
     input.setAttribute('name', 'itemQuantity')
     input.setAttribute('min', '1')
     input.setAttribute('max', '100')
-    input.setAttribute('value', `${app.localStorageReturn[i].quantity}`);
+    input.setAttribute('value', `${app.localStorageCommande[i].quantity}`);
 
     //========================
 
@@ -192,9 +205,9 @@ const app = {
   // calcule du total Quantity 
   totalQuantity: (i) => {
     // je boucle sur le tableau du localStorage
-    // for (let i = 0; i < app.localStorageReturn.length; i++) {
+    // for (let i = 0; i < app.localStorageCommande.length; i++) {
 
-    app.quantityTotalArray.push(parseInt(app.localStorageReturn[i].quantity));
+    app.quantityTotalArray.push(parseInt(app.localStorageCommande[i].quantity));
 
     //  }
     const totalValue = app.quantityTotalArray.reduce(
@@ -210,7 +223,7 @@ const app = {
   totalPrice: (data, i) => {
 
     // ajoute prix x quantiter dans l'array prixTotalArray
-    app.prixTotalArray.push(data.price * app.localStorageReturn[i].quantity);
+    app.prixTotalArray.push(data.price * app.localStorageCommande[i].quantity);
 
     // calcule de tout ce qu'il y'a dans l'array
     const totalsolde = app.prixTotalArray.reduce(
@@ -232,8 +245,8 @@ const app = {
       if (itemQuantityPannier[i].value <= 100 && itemQuantityPannier[i].value >= 1) {
 
         // je modifie la variable quantiter de localstorage par la valeur de la quantity afficher au change
-        app.localStorageReturn[i].quantity = itemQuantityPannier[i].value;
-        localStorage.setItem("commande", JSON.stringify(app.localStorageReturn)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
+        app.localStorageCommande[i].quantity = itemQuantityPannier[i].value;
+        localStorage.setItem("commande", JSON.stringify(app.localStorageCommande)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
         location.reload();// je recharge la page pour afficher toutes les valeurs
       } else {
         itemQuantityPannier[i].value = 1;
@@ -253,12 +266,12 @@ const app = {
 
         // je filtre sur le tableau recuperer par mes donee du localStorage.
         // 1 -- je cree un nouveau tableau qui renvoie toutes les commandes SAUF celle qui a le meme id de la commande du bouton Supprimer et  aussi la meme couleur pour eviter de suprimer les meme produit (car ils on le meme Id)
-        app.localStorageReturn = app.localStorageReturn.filter((item) => item.id !== app.localStorageReturn[i].id || item.color !== app.localStorageReturn[i].color);
-        if (app.localStorageReturn.length > 0) {
-          localStorage.setItem("commande", JSON.stringify(app.localStorageReturn)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
+        app.localStorageCommande = app.localStorageCommande.filter((item) => item.id !== app.localStorageCommande[i].id || item.color !== app.localStorageCommande[i].color);
+        if (app.localStorageCommande.length > 0) {
+          localStorage.setItem("commande", JSON.stringify(app.localStorageCommande)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
           alert(` Votre commande est bien enlevé du panier `); // j'allerte mon clients 
           location.reload(); // je recharge la page avec le nouveau tableau
-        } else if (app.localStorageReturn.length = 1) {
+        } else if (app.localStorageCommande.length = 1) {
           const choix = confirm(` Votre Votre panier va être vide `); // j'allerte mon clients 
           if (choix) {
             localStorage.clear();
@@ -356,8 +369,8 @@ const app = {
       const products = [];
 
       // iteration sur le retour de localstorage langth
-      for (let i = 0; i < app.localStorageReturn.length; i++) {
-        products.push(app.localStorageReturn[i].id)
+      for (let i = 0; i < app.localStorageCommande.length; i++) {
+        products.push(app.localStorageCommande[i].id)
       }
 
       const order = {
