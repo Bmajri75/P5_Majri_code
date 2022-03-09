@@ -30,11 +30,12 @@ const app = {
     app.getFetchApi();
   },
 
-  getFetchApi: () => {
+  getFetchApi: async () => {
+
     if (app.localStorageCommande !== null) {
       for (let i = 0; i < app.localStorageCommande.length; i++) {
 
-        fetch(`http://localhost:3000/api/products/${app.localStorageCommande[i].id}`)
+        await fetch(`http://localhost:3000/api/products/${app.localStorageCommande[i].id}`)
           .then(res => {
             if (res.ok) {
               return res.json() // si tout est ok j'ai un retour que je convertie en format json ()
