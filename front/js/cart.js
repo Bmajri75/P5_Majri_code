@@ -31,7 +31,6 @@ const app = {
   },
 
   getFetchApi: async () => {
-
     if (app.localStorageCommande !== null) {
       for (let i = 0; i < app.localStorageCommande.length; i++) {
 
@@ -55,7 +54,6 @@ const app = {
   //cree la page DOM
   nodeCart: (data, i) => {
     const cartItemsId = document.querySelector('#cart__items'); // je prend cart__items je le place dans la variable
-    // ==========
 
     // je cree mes element et Attributs 
     const articleElem = document.createElement('article'); //<article></article>
@@ -72,16 +70,12 @@ const app = {
     articleElem.setAttributeNode(classCartItem);
     articleElem.setAttributeNode(dataId);
     articleElem.setAttributeNode(dataColor);
-
-    // ===================
     // cree mes element //<div class="cart__item__img">
     const divCartItemImg = document.createElement('div');
     const classCartItemImg = document.createAttribute('class');
     classCartItemImg.value = `cart__item__img`;
     divCartItemImg.setAttributeNode(classCartItemImg);
-    //================================
 
-    // =======
     //<img src="../images/producti1.jpg" alt="">
     const img = document.createElement('img');
     const src = document.createAttribute('src');
@@ -91,23 +85,17 @@ const app = {
     img.setAttributeNode(src);
     img.setAttributeNode(alt);
 
-    //=====================
-
     // <div> class="cart__item__content">
     const divCartItemContent = document.createElement('div');
     const classCartItemContent = document.createAttribute('class');
     classCartItemContent.value = `cart__item__content`;
     divCartItemContent.setAttributeNode(classCartItemContent);
 
-    // =================
-
     // <div class="cart__item__content__description">
     const divCartItemContentDesc = document.createElement('div');
     const classCartItemContentDesc = document.createAttribute('class');
     classCartItemContentDesc.value = `cart__item__content__description`;
     divCartItemContentDesc.setAttributeNode(classCartItemContentDesc);
-
-    // ==========
 
     /*** <h2>lastName du produit</h2>
      <p>Vert</p>
@@ -119,15 +107,12 @@ const app = {
     paragrapheColor.innerText = ` ${app.localStorageCommande[i].color}`;
     paragraphePrice.innerText = `${data.price} €`;
 
-    // ============
-
     //<div class="cart__item__content__settings">
     const divCartItemContentSeting = document.createElement('div');
     const classCartItemContentSeting = document.createAttribute('class');
     classCartItemContentSeting.value = `cart__item__content__settings`;
 
     divCartItemContentSeting.setAttributeNode(classCartItemContentSeting);
-    // ==========
 
     // <div class="cart__item__content__settings__quantity">
     const divCartItemContentSetingQuantity = document.createElement('div');
@@ -135,12 +120,10 @@ const app = {
     classCartItemContentSetingQuantity.value = `cart__item__content__settings__quantity`;
     divCartItemContentSetingQuantity.setAttributeNode(classCartItemContentSetingQuantity);
 
-    // ================
     // <p>Qté : </p>
     const paragraphQuantity = document.createElement('p'); // 
     paragraphQuantity.innerText = `Qté:`
 
-    // ===============
 
     // input
     const input = document.createElement('input')
@@ -159,13 +142,10 @@ const app = {
     classCartItemContentSetingDelete.value = `cart__item__content__settings__delete`;
     divCartItemContentSetingDelete.setAttributeNode(classCartItemContentSetingDelete);
 
-    //==============================
     // <p>class="deleteItem">Supprimer...
     const paragrapheDeconstItem = document.createElement('p')
     paragrapheDeconstItem.innerText = 'Supprimer';
     paragrapheDeconstItem.setAttribute('class', 'deleteItem');
-
-
 
     //Montage 
     cartItemsId.appendChild(articleElem);
@@ -182,8 +162,6 @@ const app = {
     divCartItemContentSetingQuantity.appendChild(input);
     divCartItemContentSeting.appendChild(divCartItemContentSetingDelete);
     divCartItemContentSetingDelete.appendChild(paragrapheDeconstItem);
-
-    // ========
 
     // TOTAL 
     document.querySelector('#totalQuantity').innerHTML = `${app.totalQuantity(i)}`;
@@ -205,12 +183,8 @@ const app = {
 
   // calcule du total Quantity 
   totalQuantity: (i) => {
-    // je boucle sur le tableau du localStorage
-    // for (let i = 0; i < app.localStorageCommande.length; i++) {
-
     app.quantityTotalArray.push(parseInt(app.localStorageCommande[i].quantity));
 
-    //  }
     const totalValue = app.quantityTotalArray.reduce(
       (pre, cur) => pre + cur,
     );
@@ -218,15 +192,11 @@ const app = {
     return totalValue
   },
 
-  // initialisation de l'array pour le calcule total prix 
   prixTotalArray: [],
-  // calcul du prix total de la commande 
   totalPrice: (data, i) => {
 
-    // ajoute prix x quantiter dans l'array prixTotalArray
     app.prixTotalArray.push(data.price * app.localStorageCommande[i].quantity);
 
-    // calcule de tout ce qu'il y'a dans l'array
     const totalsolde = app.prixTotalArray.reduce(
       (pre, cur) => pre + cur,
     );
@@ -237,7 +207,6 @@ const app = {
   addQuantityPanier: (i) => {
     // fonction ajouter quantity a partir du panier 
     const itemQuantityPannier = document.querySelectorAll('.itemQuantity');
-    //console.log(itemQuantityPannier).value
 
 
     itemQuantityPannier[i].addEventListener('change', (e) => {
@@ -385,7 +354,6 @@ const app = {
         products
       }
 
-
       // je place dans la const option les parametre de mon fetch que je vais faire apres 
       const options = {
         method: 'POST', // j'indique que c'est une methode POST car Fetch par defaut envoie un GET
@@ -401,7 +369,6 @@ const app = {
         .then((response) => response.json())
         .then((data) => {
           // je recupere un objet avec le resumer de ma commande les ID et surtout le numero de confirmation 
-          console.log(data.orderId);// je demande a envoyer directement au Local Storage le Id de confirmation avec la key numeroCMD 
           document.location.href = `../html/confirmation.html?orderId=${data.orderId}`// j'indique la page qui dois apparaitre 
 
         })
@@ -414,7 +381,6 @@ const app = {
   }
 
 }
-
 
 // lancemenet de l'init a l'ecoute du chargement
 document.addEventListener('DOMContentLoaded', app.init);
