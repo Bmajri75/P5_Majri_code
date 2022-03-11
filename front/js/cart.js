@@ -1,15 +1,8 @@
 /**=============================Liste des methodes et parametres de cette app ========================
- * arrayGetFetch: [],
- *  app.getFetchCanap();
-    app.creatNode();
- * 
  * ============================Fonctionnement de l'app====================
- * 
  * 1 - cette app contien une methode init qui est appeler au chargement de la page.
- * 2 - elle contien 2 methodes asynchrone
- * 3 - app.getFetchCanap() ====> elle envoie une requette GET pour recuperer les donnés a partir du Backend.
- * 4 - app.creatNode() ==> est une methode qui cree les noeuds de la page et inject les data recuperer par l'API
- * app.arrayGetFetch ==> un array qui contien le retour de la methode Fetch, en locurence les données de l'API
+ * 2 - app.nodeCart(data, i);
+ * 
  */
 const app = {
   // app.localStorageCommande;
@@ -21,8 +14,11 @@ const app = {
   // deletButnFunction
 
   // je recupere les donnes du LocalStorage
-
   localStorageCommande: JSON.parse(localStorage.getItem("commande")),
+  // j'initialise un array pour le prix total 
+  prixTotalArray: [],
+  // variable d'initialisation pour le calcul de la quantiter de cmd:
+  quantityTotalArray: [],
 
 
   init: () => {
@@ -30,10 +26,12 @@ const app = {
     app.getFetchApi();
   },
 
+  // methode asynchrone 
   getFetchApi: async () => {
     if (app.localStorageCommande !== null) {
       for (let i = 0; i < app.localStorageCommande.length; i++) {
 
+        // j'atend d'avoir la reponse du fetch pour effectuer le reste
         await fetch(`http://localhost:3000/api/products/${app.localStorageCommande[i].id}`)
           .then(res => {
             if (res.ok) {
@@ -41,11 +39,11 @@ const app = {
             }
           })
           .then(data => {
-            app.nodeCart(data, i);
+            app.nodeCart(data, i); // j'efectue la methode app.nodeCart qui vas me cree la page en dynamique
           })
-          .catch(err => {
+          .catch(err => { // je capture les erreurs
             console.log(`vous avez une Erreur !! ${err}`);
-            //      alert(`Désolé, une erreur est survenur, Merci de revenir plus tard`);
+            alert(`Désolé, une erreur est survenur, Merci de revenir plus tard`);
           })
       }
     }
@@ -111,7 +109,6 @@ const app = {
     const divCartItemContentSeting = document.createElement('div');
     const classCartItemContentSeting = document.createAttribute('class');
     classCartItemContentSeting.value = `cart__item__content__settings`;
-
     divCartItemContentSeting.setAttributeNode(classCartItemContentSeting);
 
     // <div class="cart__item__content__settings__quantity">
@@ -132,9 +129,8 @@ const app = {
     input.setAttribute('name', 'itemQuantity')
     input.setAttribute('min', '1')
     input.setAttribute('max', '100')
-    input.setAttribute('value', `${app.localStorageCommande[i].quantity}`);
+    input.setAttribute('value', `${app.localStorageCommande[i].quantity}`); // je cree les atribut avec la valeur des commandes
 
-    //========================
 
     //<div class="cart__item__content__settings__delete">
     const divCartItemContentSetingDelete = document.createElement('div');
@@ -147,7 +143,7 @@ const app = {
     paragrapheDeconstItem.innerText = 'Supprimer';
     paragrapheDeconstItem.setAttribute('class', 'deleteItem');
 
-    //Montage 
+    //Montage des nodes
     cartItemsId.appendChild(articleElem);
     articleElem.appendChild(divCartItemImg);
     divCartItemImg.appendChild(img);
@@ -163,74 +159,82 @@ const app = {
     divCartItemContentSeting.appendChild(divCartItemContentSetingDelete);
     divCartItemContentSetingDelete.appendChild(paragrapheDeconstItem);
 
-    // TOTAL 
+    //les methode pour le total TOTAL 
     document.querySelector('#totalQuantity').innerHTML = `${app.totalQuantity(i)}`;
     document.querySelector('#totalPrice').innerHTML = `${app.totalPrice(data, i)}`;
 
+    // methode pour delet un article
     app.deletButnFunction(i);
-    app.addQuantityPanier(i);
-    // validation du formulaire
-    app.validityFormulaire();
-    // appel de la fonction qui envoie la commande
 
-    if (app.validityFormulaire() && app.totalQuantity(i) > 0) {
-      app.validityFormulaire();
-    }
+    // methode pour ajouter de la quantiter a partir du panier 
+    app.addQuantityPanier(i);
+
+    // validation du formulaire, avec le controle REGEX
+    app.validityFormulaire();
+
   },
 
-  // variable Initialisees 
-  quantityTotalArray: [],
-
-  // calcule du total Quantity 
+  // methode pour le calcule du total Quantity 
   totalQuantity: (i) => {
+    // je recupere dans mon array, sous forme de Integer la quantiter de ma commande a partir du LocalStorage
     app.quantityTotalArray.push(parseInt(app.localStorageCommande[i].quantity));
 
+    // reduce permet de calculer la totaliter d'un array
     const totalValue = app.quantityTotalArray.reduce(
       (pre, cur) => pre + cur,
     );
 
+    // la methode retourne la valeur total 
     return totalValue
   },
 
-  prixTotalArray: [],
+  // methode de calcule de prix total 
   totalPrice: (data, i) => {
-
+    // je recupere dans mon array le prix multiplier par la quantiter commander
     app.prixTotalArray.push(data.price * app.localStorageCommande[i].quantity);
 
+    // reduce calcule le total de mon array 
     const totalsolde = app.prixTotalArray.reduce(
       (pre, cur) => pre + cur,
     );
+
+    // je retourne le total
     return totalsolde
   },
 
-
+  // methode pour ajouter une quantiter a partir du panier 
   addQuantityPanier: (i) => {
-    // fonction ajouter quantity a partir du panier 
+    // je selectionne toutes les class itemQuantity
     const itemQuantityPannier = document.querySelectorAll('.itemQuantity');
 
-
+    // j'ecoute le changement de toutes mes commandes car la methode va etre bouclée.
     itemQuantityPannier[i].addEventListener('change', (e) => {
       e.preventDefault();
 
+      // si la valeurs est infefieur et superieur a 1 j'execute
       if (itemQuantityPannier[i].value <= 100 && itemQuantityPannier[i].value >= 1) {
 
         // je modifie la variable quantiter de localstorage par la valeur de la quantity afficher au change
         app.localStorageCommande[i].quantity = itemQuantityPannier[i].value;
         localStorage.setItem("commande", JSON.stringify(app.localStorageCommande)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
-        location.reload();// je recharge la page pour afficher toutes les valeurs
+        location.reload();// je recharge la page pour afficher toutes les valeurs mise a jours
       } else {
-        itemQuantityPannier[i].value = 1;
+        itemQuantityPannier[i].value = 1; // sinon je remet une valeur a 1
       }
     })
 
   },
 
-  // btn supprimer du panier
+  // methode pour la gestion du btn supprimer du panier
   deletButnFunction: (i) => {
 
+    // je selectionne tout les btn supprimer 
     const deleteBtn = document.querySelectorAll(".deleteItem");
+
+    // je boucle sur le nombre de btn cree donc equivaut au nbr d'article
     for (let k = 0; k < deleteBtn.length; k++) {
 
+      // j'ecoute le clique pour chaque btn
       deleteBtn[k].addEventListener('click', (e) => {
         e.preventDefault();
 
@@ -241,22 +245,27 @@ const app = {
           localStorage.setItem("commande", JSON.stringify(app.localStorageCommande)); //j'envoie au local storage mon nouveau tableau avec la commande mise a jours
           alert(` Votre commande est bien enlevé du panier `); // j'allerte mon clients 
           location.reload(); // je recharge la page avec le nouveau tableau
+
+          // si ma commande est la derniere je demande confirmation pour vider le panier
         } else if (app.localStorageCommande.length = 1) {
-          const choix = confirm(` Votre Votre panier va être vide `); // j'allerte mon clients 
-          if (choix) {
+          const choix = confirm(` Votre Votre panier va être vide `); // je recupere le choix
+
+          if (choix) {//si le choix est true je clear le localstorage et revient a 0
             localStorage.clear();
-            alert(` Votre commande est bien enlevé du panier `); // j'allerte mon clients 
-            location.reload(); // je recharge la page avec le nouveau tableau
+            alert(` Votre commande est bien enlevé du panier `); // j'allerte mon clients que c'est bien vide
+            location.reload(); // je recharge la page pour avoir une page vide
+          } else {
+            location.reload();// je recharge la page pour afficher toutes les valeurs mise a jours
           }
         }
       })
     }
   },
 
-  //creation du formulaire de verification 
+  //Methode de creation de  formulaire de verification 
   validityFormulaire: () => {
 
-    // selection de la balise formulaire 
+    // selection des balises du formulaire 
     const formFirstName = document.querySelector('#firstName');
     const formLastName = document.querySelector('#lastName');
     const formAddress = document.querySelector('#address');
@@ -264,12 +273,12 @@ const app = {
     const formEmail = document.querySelector('#email');
 
 
-    // Ajout des verifications
-    const caractereVerif = /^[a-zA-Z ,.'-]+$/
+    //  Ajout des verifications REGEX
+    const caractereVerif = /^[a-zA-Z ,.'-]+$/ // verifie qu'il y'a bien des lettre de a-z et certain "-, . ' ""
     const emailCharVerif = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     const adresseVerif = /^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/;
 
-    //Prenom
+    //Prenom verification
     formFirstName.addEventListener('change', (e) => {
       e.preventDefault()
       if (caractereVerif.test(formFirstName.value)) {
@@ -280,7 +289,7 @@ const app = {
     });
 
 
-    // nom 
+    // nom verification
     formLastName.addEventListener('change', (e) => {
       e.preventDefault()
       if (caractereVerif.test(formLastName.value)) {
@@ -290,7 +299,7 @@ const app = {
       }
     });
 
-    // addresse
+    // addresse verification
     formAddress.addEventListener('change', (e) => {
       e.preventDefault()
       if (adresseVerif.test(formAddress.value)) {
@@ -300,7 +309,7 @@ const app = {
       }
     });
 
-    // ville
+    // ville verification
     formCity.addEventListener('change', (e) => {
       e.preventDefault()
       if (caractereVerif.test(formCity.value)) {
@@ -310,7 +319,7 @@ const app = {
       }
     });
 
-    //Email
+    //Email verification
     formEmail.addEventListener('change', (e) => {
       e.preventDefault()
       if (emailCharVerif.test(formEmail.value)) {
@@ -318,31 +327,29 @@ const app = {
       } else {
         document.querySelector('#emailErrorMsg').innerHTML = `un email valide c'est unnom@monfournisseur.com.`;
       }
-
-
     });
-    app.sendCmd();
+    app.sendCmd() // apres les controle je cree la methode pour envoyer au backend
   },
 
-  // j'envoie la commande au backend
+  //  Methode d'envoie de la commande au backend
   sendCmd: () => {
 
-
-    // selection de la balise order 
+    // selection de la balise order "le bouton envoyer"
     const btnEnvoyer = document.querySelector('#order');
 
     // au click du btnEnvoyer
     btnEnvoyer.addEventListener('click', (e) => {
       e.preventDefault();
 
-      // initialise mon tableau
+      // initialise mon tableau product qui sera envoyer conformement a la demande
       const products = [];
 
-      // iteration sur le retour de localstorage langth
+      // iteration sur le retour de localstorage langth pour inserer les Id dans le tableau 
       for (let i = 0; i < app.localStorageCommande.length; i++) {
         products.push(app.localStorageCommande[i].id)
       }
 
+      // creation de l'objet atendu par le backend
       const order = {
         contact: {
           firstName: document.querySelector('#firstName').value,
@@ -354,33 +361,33 @@ const app = {
         products
       }
 
-      // je place dans la const option les parametre de mon fetch que je vais faire apres 
+      // je place dans l' objet option les parametre de mon fetch que je vais faire apres 
       const options = {
         method: 'POST', // j'indique que c'est une methode POST car Fetch par defaut envoie un GET
         body: JSON.stringify(order), // j'indique qu'il sagit de l'objet order sous forme de string pour etre un JSON
         headers: {
-          'Accept': 'application/json',
+          'Accept': 'application/json', //type application utilisé
           "Content-Type": "application/json"// je lui dit qu'il faut lire en JSON
         },
       };
 
-      // fetch pour envoyer au backend
+      // le fetch pour envoyer au backend en ;ethode POST cette fois ci
       fetch("http://localhost:3000/api/products/order", options)
         .then((response) => response.json())
         .then((data) => {
-          // je recupere un objet avec le resumer de ma commande les ID et surtout le numero de confirmation 
-          document.location.href = `../html/confirmation.html?orderId=${data.orderId}`// j'indique la page qui dois apparaitre 
+
+          // ici je place directement dans l'URL le retour de ma demande fetch
+          document.location.href = `../html/confirmation.html?orderId=${data.orderId}`// j'indique la page qui dois apparaitre
 
         })
+        //gestion des erreurs
         .catch((err) => {
           console.log(`vous avez une erreur :  ${err}`)
           alert(`Désolé, une erreur est survenur, Merci de revenir plus tard`)
         })
     })
-
   }
-
 }
 
-// lancemenet de l'init a l'ecoute du chargement
+// lancemenet de l'init a l'ecoute du chargement de la page
 document.addEventListener('DOMContentLoaded', app.init);
